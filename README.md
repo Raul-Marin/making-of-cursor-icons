@@ -1,5 +1,7 @@
 # Companion local · Cursor Icons
 
+**Live:** [https://cursoricons.vercel.app](https://cursoricons.vercel.app)
+
 Studio interno inspirado en el companion que Marek Minor describe en
 [The making of Cursor’s icons](https://www.minoradventures.co/blog/the-making-of-cursors-icons),
 con la estructura de catálogo de un icon explorer (packs, inspector, copy SVG)
