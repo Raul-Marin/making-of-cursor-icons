@@ -112,34 +112,6 @@
         overflow: hidden;
       }
 
-      .titlebar {
-        display: grid;
-        grid-template-columns: 72px 1fr 72px;
-        align-items: center;
-        height: 38px;
-        padding: 0 12px;
-        background: var(--bg);
-        border-bottom: 1px solid var(--line);
-        user-select: none;
-      }
-      .traffic { display: flex; gap: 7px; }
-      .traffic i {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        display: block;
-      }
-      .traffic .r { background: #ff5f57; }
-      .traffic .y { background: #febc2e; }
-      .traffic .g { background: #28c840; }
-      .win-title {
-        text-align: center;
-        font-size: 13px;
-        color: #6b6964;
-        font-weight: 400;
-      }
-      html.dark .win-title { color: var(--muted); }
-
       .shell { display: flex; flex: 1; min-height: 0; }
 
       .sidebar {
@@ -158,7 +130,9 @@
       }
       .side-label:first-child { margin-top: 0; }
       .side-link {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 9px;
         width: 100%;
         padding: 5px 0;
         border: 0;
@@ -167,19 +141,68 @@
         font-size: 14px;
         color: var(--ink);
       }
+      .side-link-label {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .side-link-loader {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+      }
+      .side-link.is-loading .side-link-loader {
+        display: inline-flex;
+      }
+      .side-link.is-loading .side-link-label {
+        color: var(--ink);
+      }
+      .dot-grid-loader {
+        display: block;
+        width: 15px;
+        height: 15px;
+      }
+      .dot-grid-loader circle {
+        fill: currentColor;
+        opacity: 0.12;
+        animation: side-dot-wave 1.4s ease-in-out infinite;
+      }
+      .dot-grid-loader circle:nth-child(1) { animation-delay: -0.464s; }
+      .dot-grid-loader circle:nth-child(2) { animation-delay: -0.309s; }
+      .dot-grid-loader circle:nth-child(3) { animation-delay: -0.154s; }
+      .dot-grid-loader circle:nth-child(4) { animation-delay: -0.309s; }
+      .dot-grid-loader circle:nth-child(5) { animation-delay: -0.464s; }
+      .dot-grid-loader circle:nth-child(6) { animation-delay: -0.619s; }
+      .dot-grid-loader circle:nth-child(7) { animation-delay: -0.154s; }
+      .dot-grid-loader circle:nth-child(8) { animation-delay: 0s; }
+      .dot-grid-loader circle:nth-child(9) { animation-delay: -0.154s; }
+      @keyframes side-dot-wave {
+        0%, 100% { opacity: 0.12; }
+        40% { opacity: 1; }
+        75% { opacity: 0.12; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .dot-grid-loader circle {
+          animation: none;
+          opacity: 0.45;
+        }
+      }
       .side-link.on { color: var(--accent); }
       .side-link-mark {
         margin-top: 14px;
         padding-top: 12px;
         border-top: 1px solid var(--line);
       }
-      .side-link-mark::after {
+      .side-link-mark .side-link-label::after {
         content: "*";
         margin-left: 3px;
         color: var(--accent);
         font-weight: 500;
       }
-      .side-link-mark.on::after {
+      .side-link-mark.on .side-link-label::after {
         color: inherit;
       }
       .side-foot {
@@ -278,7 +301,8 @@
       .search {
         position: relative;
         flex: 1 1 auto;
-        min-width: 180px;
+        min-width: 0;
+        overflow: hidden;
       }
       .search > svg {
         position: absolute;
@@ -302,6 +326,14 @@
         background: transparent;
         font-size: 13px;
         outline: none;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .search input::placeholder {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       .search input::-webkit-search-decoration,
       .search input::-webkit-search-cancel-button { -webkit-appearance: none; }
@@ -362,7 +394,8 @@
         flex-shrink: 0;
       }
       #zoom,
-      #dzoom {
+      #dzoom,
+      #gallery-size {
         -webkit-appearance: none;
         appearance: none;
         height: 22px;
@@ -376,16 +409,19 @@
         flex: 0 0 auto;
       }
       #zoom { width: 112px; }
+      #gallery-size { width: 120px; margin: 0; }
       #dzoom { flex: 1 1 auto; width: auto; min-width: 0; }
       #zoom::-webkit-slider-runnable-track,
-      #dzoom::-webkit-slider-runnable-track {
+      #dzoom::-webkit-slider-runnable-track,
+      #gallery-size::-webkit-slider-runnable-track {
         height: 4px;
         background: #d9d6d0;
         border: 0;
         border-radius: 2px;
       }
       #zoom::-webkit-slider-thumb,
-      #dzoom::-webkit-slider-thumb {
+      #dzoom::-webkit-slider-thumb,
+      #gallery-size::-webkit-slider-thumb {
         -webkit-appearance: none;
         width: 14px;
         height: 14px;
@@ -397,21 +433,24 @@
         box-shadow: none;
       }
       #zoom::-moz-range-track,
-      #dzoom::-moz-range-track {
+      #dzoom::-moz-range-track,
+      #gallery-size::-moz-range-track {
         height: 4px;
         background: #d9d6d0;
         border: 0;
         border-radius: 2px;
       }
       #zoom::-moz-range-progress,
-      #dzoom::-moz-range-progress {
+      #dzoom::-moz-range-progress,
+      #gallery-size::-moz-range-progress {
         height: 4px;
         background: #d9d6d0;
         border: 0;
         border-radius: 2px;
       }
       #zoom::-moz-range-thumb,
-      #dzoom::-moz-range-thumb {
+      #dzoom::-moz-range-thumb,
+      #gallery-size::-moz-range-thumb {
         width: 14px;
         height: 14px;
         border: 0;
@@ -421,14 +460,19 @@
       }
       html.dark #zoom::-webkit-slider-runnable-track,
       html.dark #dzoom::-webkit-slider-runnable-track,
+      html.dark #gallery-size::-webkit-slider-runnable-track,
       html.dark #zoom::-moz-range-track,
       html.dark #dzoom::-moz-range-track,
+      html.dark #gallery-size::-moz-range-track,
       html.dark #zoom::-moz-range-progress,
-      html.dark #dzoom::-moz-range-progress { background: #4a4843; }
+      html.dark #dzoom::-moz-range-progress,
+      html.dark #gallery-size::-moz-range-progress { background: #4a4843; }
       html.dark #zoom::-webkit-slider-thumb,
       html.dark #dzoom::-webkit-slider-thumb,
+      html.dark #gallery-size::-webkit-slider-thumb,
       html.dark #zoom::-moz-range-thumb,
-      html.dark #dzoom::-moz-range-thumb { background: var(--ink); }
+      html.dark #dzoom::-moz-range-thumb,
+      html.dark #gallery-size::-moz-range-thumb { background: var(--ink); }
       .px-input {
         box-sizing: border-box;
         appearance: none;
@@ -938,12 +982,14 @@
       .docs p { color: #3f3d38; }
       html.dark .docs p { color: #c9c6bf; }
       .docs-soon {
+        position: relative;
+        z-index: 1;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
         padding: 0;
-        max-width: 28rem;
+        max-width: 38em;
       }
       .docs-soon-line {
         display: block;
@@ -957,12 +1003,16 @@
         line-height: 1.5;
         color: var(--muted);
       }
-      .docs-soon-note a {
-        color: var(--ink);
+      .docs-soon .docs-sources {
+        max-width: 38em;
+        margin-top: 20px;
+        padding-top: 14px;
       }
       body[data-page="docs-philo"] .toolbar,
       body[data-page="docs-add"] .toolbar,
+      body[data-page="docs-comparativa"] .toolbar,
       body[data-page="docs-project"] .toolbar,
+      body[data-page="gallery"] .toolbar,
       body[data-page="home"] .toolbar { display: none; }
       body[data-page="home"] #foot { display: none !important; }
       body[data-page="home"] #home-view {
@@ -1025,7 +1075,82 @@
         object-fit: cover;
         object-position: top left;
       }
-      #docs-philo.page,
+      #docs-comparativa.page {
+        padding-top: 28px;
+        padding-right: 40px;
+        padding-bottom: 40px;
+        padding-left: calc(var(--content-inset) + 24px);
+        overflow: auto;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+      }
+      #docs-comparativa.page:hover {
+        scrollbar-color: rgba(26, 25, 21, 0.1) transparent;
+      }
+      html.dark #docs-comparativa.page:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+      }
+      #docs-philo.page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        padding-top: 28px;
+        padding-right: 40px;
+        padding-bottom: 40px;
+        padding-left: calc(var(--content-inset) + 24px);
+        overflow: hidden;
+        min-height: 100%;
+      }
+      body[data-page="docs-philo"] .workspace {
+        position: relative;
+      }
+      .docs-philo-bg {
+        display: none;
+      }
+      body[data-page="docs-philo"] .docs-philo-bg {
+        display: none;
+      }
+      body[data-page="docs-philo"] #docs-philo.page {
+        position: relative;
+        z-index: 1;
+      }
+      .docs-philo-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+      }
+      .docs-philo-hero img {
+        display: block;
+        width: min(200px, 46vw);
+        height: auto;
+        aspect-ratio: 1;
+        opacity: 0.16;
+        filter: saturate(0.42);
+      }
+      html.dark .docs-philo-hero img {
+        opacity: 0.12;
+        filter: saturate(0.35) brightness(1.12);
+      }
+      .docs-philo-soon {
+        margin: 0;
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--faint);
+        letter-spacing: 0.03em;
+      }
+      .docs-philo-sources {
+        position: absolute;
+        left: calc(var(--content-inset) + 24px);
+        bottom: 40px;
+        max-width: 38em;
+        margin: 0;
+        padding-top: 0;
+      }
       #docs-add.page,
       #docs-project.page {
         padding-top: 28px;
@@ -1044,66 +1169,410 @@
         flex-direction: column;
         gap: 28px;
       }
-      .docs-project-page .docs-editorial-copy,
-      .docs-carousel {
+      .docs-project-page .docs-editorial-copy {
         max-width: 38em;
       }
-      .docs-carousel {
+      .project-marquee-bleed {
         position: relative;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        margin-right: 0;
+        margin-right: -40px;
       }
-      .docs-carousel-track {
-        flex: 1;
-        min-width: 0;
-        display: flex;
+      .project-marquee {
+        position: relative;
         overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        border: none;
-        background: none;
-        box-shadow: none;
-        scrollbar-width: none;
-      }
-      .docs-carousel-track::-webkit-scrollbar { display: none; }
-      .docs-carousel-slide {
-        flex: 0 0 100%;
-        margin: 0;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-      }
-      .docs-carousel-slide img {
-        display: block;
+        overflow-y: hidden;
         width: 100%;
-        height: auto;
-        max-height: min(52vh, 480px);
-        object-fit: contain;
-        object-position: center;
-        margin: 0 auto;
-        border-radius: 8px;
+        height: min(52vh, 480px);
+        cursor: none;
+        user-select: none;
+        scrollbar-width: none;
+        container-type: inline-size;
       }
-      .docs-carousel-arrow {
-        flex: 0 0 auto;
+      .project-marquee-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: min(38em, calc(100% - 72px));
+        pointer-events: none;
+        z-index: 2;
+        background: color-mix(in srgb, var(--bg) 86%, transparent);
+      }
+      .project-marquee-cursor {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 30;
         display: grid;
         place-items: center;
-        width: 28px;
-        height: 28px;
-        padding: 0;
-        border: 0;
-        background: none;
-        color: var(--muted);
-        font-size: 18px;
-        line-height: 1;
-        cursor: pointer;
-        opacity: 0.55;
-        transition: opacity 0.15s ease, color 0.15s ease;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(26, 25, 22, 0.1);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 4px 16px rgba(20, 18, 14, 0.12);
+        color: #3f3d38;
+        pointer-events: none;
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.92);
+        transition: opacity 0.15s ease, transform 0.15s ease;
       }
-      .docs-carousel-arrow:hover {
+      html.dark .project-marquee-cursor {
+        border-color: rgba(255, 255, 255, 0.1);
+        background: rgba(42, 41, 37, 0.94);
+        color: #f4f3ef;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+      }
+      .project-marquee-cursor.is-visible {
         opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      .project-marquee-cursor.is-dragging {
+        transform: translate(-50%, -50%) scale(0.94);
+      }
+      .project-marquee-cursor svg {
+        width: 18px;
+        height: 18px;
+        display: block;
+      }
+      @media (pointer: coarse) {
+        .project-marquee { cursor: grab; }
+        .project-marquee.is-dragging { cursor: grabbing; }
+        .project-marquee-cursor { display: none; }
+      }
+      .project-marquee::-webkit-scrollbar { display: none; }
+      .project-marquee-track {
+        display: flex;
+        align-items: stretch;
+        gap: 14px;
+        width: max-content;
+        height: 100%;
+        padding-right: 14px;
+      }
+      .project-marquee-slide {
+        position: relative;
+        flex: 0 0 auto;
+        height: 100%;
+        max-width: calc(100cqi - 56px);
+        margin: 0;
+        border-radius: 12px 0 0 0;
+        overflow: hidden;
+        background: transparent;
+      }
+      .project-marquee-slide-label {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+        z-index: 1;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em;
+        color: #f4f3ef;
+        background: rgba(20, 18, 14, 0.62);
+        backdrop-filter: blur(6px);
+        pointer-events: none;
+      }
+      html.dark .project-marquee-slide-label {
+        color: #f4f3ef;
+        background: rgba(0, 0, 0, 0.55);
+      }
+      .project-marquee-slide img {
+        display: block;
+        height: 100%;
+        width: auto;
+        max-width: none;
+        object-fit: cover;
+        object-position: top left;
+        pointer-events: none;
+      }
+      #docs-comparativa.docs {
+        max-width: none;
+        font-size: 15px;
+        line-height: 1.65;
+      }
+      .docs-comparativa-page {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 38em;
+      }
+      .docs-comparativa-page .docs-editorial-copy {
+        max-width: none;
+      }
+      .cmp-tabs {
+        display: inline-flex;
+        align-items: stretch;
+        align-self: flex-start;
+        max-width: 100%;
+        padding: 3px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--soft);
+        gap: 2px;
+      }
+      .cmp-tabs-main {
+        width: 100%;
+      }
+      .cmp-tabs-main button {
+        flex: 1 1 0;
+        text-align: center;
+      }
+      .cmp-tabs-sm {
+        margin-bottom: 14px;
+      }
+      .cmp-tabs button {
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.2;
+        color: var(--muted);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      }
+      .cmp-tabs-sm button {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      .cmp-tabs button:hover:not(.on) {
         color: var(--ink);
+        background: rgba(255, 255, 255, 0.45);
+      }
+      html.dark .cmp-tabs button:hover:not(.on) {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .cmp-tabs button.on {
+        background: var(--white);
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgba(20, 18, 14, 0.08);
+      }
+      html.dark .cmp-tabs button.on {
+        background: #2f2e2a;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+      }
+      .cmp-tabs button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      .cmp-block {
+        max-width: none;
+      }
+      .cmp-block-lead {
+        margin: 0 0 14px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: #3f3d38;
+      }
+      html.dark .cmp-block-lead { color: #c9c6bf; }
+      .cmp-selectors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .cmp-selectors button {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        cursor: pointer;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+      .cmp-selectors button:hover {
+        border-color: var(--muted);
+      }
+      .cmp-selectors button.on {
+        border-color: var(--accent);
+        box-shadow: inset 0 0 0 1px var(--accent);
+      }
+      .cmp-selectors button img {
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+      }
+      html.dark .cmp-selectors button img { filter: invert(1); }
+      .cmp-display {
+        position: relative;
+        width: 100%;
+        min-height: 0;
+      }
+      html.dark .cmp-display { background: none; }
+      .cmp-viewport {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #f8f7f4;
+        touch-action: none;
+      }
+      html.dark .cmp-viewport { background: #f8f7f4; }
+      .cmp-viewport-chrome {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        pointer-events: none;
+      }
+      .cmp-viewport:not(.is-diff) {
+        display: grid;
+        place-items: center;
+      }
+      .cmp-viewport:not(.is-diff) .cmp-canvas {
+        position: static;
+        transform: none !important;
+      }
+      .cmp-viewport.is-diff {
+        cursor: grab;
+        user-select: none;
+        background:
+          linear-gradient(90deg, rgba(26, 25, 22, 0.04) 1px, transparent 1px),
+          linear-gradient(rgba(26, 25, 22, 0.04) 1px, transparent 1px);
+        background-size: 16px 16px;
+        background-position: center;
+      }
+      .cmp-viewport.is-diff.is-panning { cursor: grabbing; }
+      .cmp-canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 220px;
+        height: 220px;
+        transform-origin: 0 0;
+      }
+      .cmp-icon-stage {
+        position: relative;
+        width: 220px;
+        height: 220px;
+      }
+      .cmp-icon-stage svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        shape-rendering: geometricPrecision;
+      }
+      .cmp-icon-stage img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+      }
+      .cmp-icon-stage .cmp-layer {
+        position: absolute;
+        inset: 0;
+      }
+      .cmp-diff-before,
+      .cmp-diff-after {
+        opacity: 0.62;
+      }
+      .cmp-legend {
+        position: absolute;
+        right: 12px;
+        bottom: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6f6c66;
+      }
+      .cmp-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .cmp-swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+      }
+      .cmp-swatch-before { background: #e5484d; }
+      .cmp-swatch-after { background: #30a46c; }
+      .cmp-mode-label {
+        position: absolute;
+        bottom: 10px;
+        left: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        color: #6f6c66;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+      .cmp-zoom-bar {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid rgba(26, 25, 22, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 2px 8px rgba(20, 18, 14, 0.08);
+      }
+      .cmp-zoom-bar button {
+        display: grid;
+        place-items: center;
+        min-width: 28px;
+        height: 28px;
+        padding: 0 8px;
+        border: 0;
+        border-radius: 5px;
+        background: transparent;
+        font-size: 14px;
+        line-height: 1;
+        color: #3f3d38;
+        cursor: pointer;
+      }
+      .cmp-zoom-bar button:hover {
+        background: rgba(26, 25, 22, 0.06);
+      }
+      .cmp-zoom-bar [data-cmp-zoom-label] {
+        min-width: 52px;
+        font-size: 11px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .cmp-diff-hint {
+        position: absolute;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        margin: 0;
+        max-width: calc(100% - 180px);
+        font-size: 10px;
+        line-height: 1.3;
+        color: #8c8983;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        pointer-events: none;
+      }
+      .cmp-viewport.is-diff .cmp-mode-label { bottom: 30px; }
+      .cmp-viewport.is-diff .cmp-legend { bottom: 30px; }
+      .cmp-caption {
+        margin: 12px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
       }
       #docs-add.docs {
         max-width: none;
@@ -1120,6 +1589,67 @@
       html.dark .docs-editorial-copy p { color: #c9c6bf; }
       .docs-editorial-copy p:last-child { margin-bottom: 0; }
       .docs-editorial-copy strong { font-weight: 600; color: var(--ink); }
+      .docs-fade {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .docs-fade.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .docs-fade {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+      .docs-ref {
+        font-size: 0.68em;
+        font-weight: 600;
+        line-height: 0;
+        vertical-align: super;
+        margin-left: 0.12em;
+      }
+      .docs-ref a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .docs-ref a:hover {
+        color: var(--ink);
+        text-decoration: underline;
+      }
+      .docs-sources {
+        margin-top: 32px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+      .docs-comparativa-page .docs-sources,
+      .docs-project-page .docs-sources {
+        max-width: 38em;
+      }
+      .docs-project-page .docs-sources {
+        margin-bottom: 28px;
+      }
+      .docs-sources ol {
+        margin: 0;
+        padding-left: 1.25em;
+      }
+      .docs-sources li { margin: 0; }
+      .docs-sources a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .docs-sources a:hover { color: var(--ink); }
+      .cmp-block-lead .docs-ref {
+        font-size: 0.75em;
+        margin-left: 0.2em;
+      }
       .docs-terminal {
         margin: 20px 0 24px;
         max-width: 260px;
@@ -1549,22 +2079,308 @@
       }
       .toast.show { opacity: 1; }
 
+      .mobile-menu,
+      .nav-scrim { display: none; }
+
       @media (max-width: 860px) {
+        .shell { position: relative; }
         .sidebar { display: none; }
         body[data-page="files"] #color-seg { margin-left: 0; }
-        body.nav-open .sidebar { display: block; position: absolute; inset: 38px auto 0 0; z-index: 6; height: calc(100% - 38px); }
+        body.nav-open .sidebar {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          inset: 0 auto 0 0;
+          z-index: 6;
+          width: min(288px, 88vw);
+          height: 100%;
+          box-shadow: 12px 0 40px rgba(20, 18, 14, 0.14);
+        }
+        html.dark body.nav-open .sidebar {
+          box-shadow: 12px 0 40px rgba(0, 0, 0, 0.42);
+        }
+        .nav-scrim {
+          display: none;
+          position: fixed;
+          inset: 0;
+          z-index: 5;
+          border: 0;
+          padding: 0;
+          background: rgba(20, 18, 14, 0.28);
+          cursor: pointer;
+        }
+        html.dark .nav-scrim { background: rgba(0, 0, 0, 0.48); }
+        body.nav-open .nav-scrim { display: block; }
+        .mobile-menu {
+          display: grid;
+          place-items: center;
+          position: fixed;
+          top: 12px;
+          left: 12px;
+          z-index: 7;
+          width: 36px;
+          height: 36px;
+          padding: 0;
+          border: 1px solid var(--line);
+          border-radius: 9px;
+          background: color-mix(in srgb, var(--bg) 92%, transparent);
+          color: var(--ink);
+          box-shadow: 0 4px 16px rgba(20, 18, 14, 0.08);
+          backdrop-filter: blur(8px);
+        }
+        html.dark .mobile-menu {
+          background: color-mix(in srgb, var(--bg) 88%, transparent);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.24);
+        }
+        .mobile-menu svg {
+          width: 16px;
+          height: 16px;
+        }
+        #burger { display: none !important; }
+        .toolbar {
+          padding-left: 52px;
+        }
+        body[data-page="home"] .toolbar,
+        body[data-page="docs-philo"] .toolbar,
+        body[data-page="docs-add"] .toolbar,
+        body[data-page="docs-comparativa"] .toolbar,
+        body[data-page="docs-project"] .toolbar,
+        body[data-page="gallery"] .toolbar {
+          display: none;
+        }
+        body[data-page="home"] #home-view,
+        body[data-page="docs-philo"] #docs-philo,
+        body[data-page="docs-add"] #docs-add,
+        body[data-page="docs-comparativa"] #docs-comparativa,
+        body[data-page="docs-project"] #docs-project,
+        body[data-page="gallery"] #gallery-view {
+          padding-top: 52px;
+        }
+        #gallery-view.page {
+          padding: 52px 16px 32px;
+        }
+        #docs-philo.page {
+          padding-top: 20px;
+          padding-right: 20px;
+          padding-bottom: 32px;
+          padding-left: 20px;
+        }
+        .docs-philo-hero img {
+          width: min(168px, 58vw);
+        }
+        .docs-philo-sources {
+          position: static;
+          align-self: flex-start;
+          margin-top: auto;
+        }
+        .project-marquee-bleed {
+          margin-right: 0;
+        }
+        .project-marquee {
+          height: min(44vh, 360px);
+        }
+        .cmp-tabs-main,
+        .cmp-tabs-sm {
+          flex-wrap: wrap;
+        }
         .inspector { display: none; }
         .count { display: none; }
+      }
+      @media (min-width: 861px) {
+        .mobile-menu,
+        .nav-scrim { display: none !important; }
+      }
+
+      #gallery-view.page {
+        padding: 28px 40px 48px calc(var(--content-inset) + 24px);
+        overflow: auto;
+        max-width: none;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+      }
+      #gallery-view.page:hover {
+        scrollbar-color: rgba(26, 25, 21, 0.1) transparent;
+      }
+      html.dark #gallery-view.page:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+      }
+      .gallery-page {
+        width: 100%;
+      }
+      .gallery-head {
+        max-width: none;
+        margin: 0 0 28px;
+      }
+      .gallery-head-top {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .gallery-head-copy {
+        max-width: 38em;
+        flex: 1 1 240px;
+      }
+      .gallery-size {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        padding-bottom: 2px;
+      }
+      .gallery-size-label {
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .gallery-size-hint {
+        font-size: 11px;
+        color: var(--faint);
+        line-height: 1;
+        user-select: none;
+      }
+      .gallery-head h1 {
+        margin: 0 0 8px;
+        font-size: clamp(26px, 3vw, 32px);
+        font-weight: 400;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+      }
+      .gallery-head p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+      .gallery-masonry {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--gallery-gap, 16px);
+        width: 100%;
+      }
+      .gallery-col {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gallery-gap, 16px);
+      }
+      .gallery-item {
+        position: relative;
+        margin: 0;
+        overflow: hidden;
+        border-radius: 16px;
+        border: 1px solid color-mix(in srgb, var(--ink) 8%, var(--line));
+        background: color-mix(in srgb, var(--bg) 92%, var(--soft));
+        box-shadow: 0 1px 2px rgba(20, 18, 14, 0.04);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      html.dark .gallery-item {
+        border-color: color-mix(in srgb, var(--line) 88%, transparent);
+        background: color-mix(in srgb, var(--bg) 88%, var(--soft));
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      .gallery-item:hover {
+        box-shadow: 0 4px 14px rgba(20, 18, 14, 0.08);
+      }
+      html.dark .gallery-item:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+      }
+      .gallery-media {
+        width: 100%;
+        line-height: 0;
+        background: var(--soft);
+      }
+      .gallery-media img,
+      .gallery-media video {
+        width: 100%;
+        height: auto;
+        display: block;
+        vertical-align: bottom;
+      }
+      .gallery-cap {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        z-index: 1;
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        line-height: 1.3;
+        color: #f4f3ef;
+        background: rgba(20, 18, 14, 0.62);
+        backdrop-filter: blur(6px);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+      }
+      .gallery-item:hover .gallery-cap,
+      .gallery-item:focus-within .gallery-cap {
+        opacity: 1;
+      }
+      .gallery-skeleton-item {
+        position: relative;
+        height: var(--sh, 180px);
+        overflow: hidden;
+        border-radius: 16px;
+        border: 1px solid color-mix(in srgb, var(--ink) 6%, var(--line));
+        background: color-mix(in srgb, var(--soft) 90%, var(--line));
+      }
+      html.dark .gallery-skeleton-item {
+        border-color: color-mix(in srgb, var(--line) 82%, transparent);
+        background: color-mix(in srgb, var(--soft) 84%, var(--bg));
+      }
+      .gallery-skeleton-shimmer {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          100deg,
+          transparent 0%,
+          color-mix(in srgb, var(--bg) 72%, transparent) 45%,
+          transparent 90%
+        );
+        background-size: 220% 100%;
+        animation: gallery-shimmer 1.35s ease-in-out infinite;
+      }
+      @keyframes gallery-shimmer {
+        0% { background-position: 120% 0; }
+        100% { background-position: -120% 0; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .gallery-skeleton-shimmer {
+          animation: none;
+          opacity: 0.35;
+        }
+      }
+      @media (max-width: 560px) {
+        .gallery-head-top {
+          align-items: stretch;
+        }
+        .gallery-size {
+          width: 100%;
+          justify-content: space-between;
+        }
+        #gallery-size {
+          flex: 1 1 auto;
+          max-width: 200px;
+        }
+        .gallery-masonry {
+          --gallery-gap: 12px;
+        }
+        .gallery-item {
+          border-radius: 14px;
+        }
+        .gallery-skeleton-item {
+          border-radius: 14px;
+        }
       }
     </style>
   </head>
   <body data-page="home">
     <div class="app" id="app">
-      <div class="titlebar">
-        <div class="traffic" aria-hidden="true"><i class="r"></i><i class="y"></i><i class="g"></i></div>
-        <div class="win-title">Cursor Icons</div>
-        <div></div>
-      </div>
+      <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar"></button>
+      <button class="nav-scrim" id="nav-scrim" type="button" aria-label="Close menu" tabindex="-1"></button>
       <div class="shell">
         <aside class="sidebar" id="sidebar">
           <button class="side-link on" data-page="home">Home</button>
@@ -1575,11 +2391,13 @@
           <div class="side-label">Docs</div>
           <button class="side-link" data-page="docs-add">Adding an Icon</button>
           <button class="side-link" data-page="docs-philo">Design Philosophy</button>
+          <button class="side-link" data-page="docs-comparativa">Small/big details</button>
+          <button class="side-link" data-page="gallery">Gallery</button>
           <button class="side-link side-link-mark" data-page="docs-project">This Project</button>
           <p class="side-foot">
             <img src="./assets/shift-r.png" width="16" height="16" alt="" />
             <span>A <a class="side-foot-link" href="https://shiftr.pro" target="_blank" rel="noopener">Shift+R</a> project · tribute to craft in the age of AI slop</span>
-            <span class="side-foot-note"><strong>Disclaimer:</strong> Icons © Cursor. Unofficial educational project, not affiliated.</span>
+            <span class="side-foot-note"><strong>Disclaimer:</strong> Material from <a class="side-foot-link" href="https://cursor.com" target="_blank" rel="noopener">Cursor.com</a> and <a class="side-foot-link" href="https://marekminor.com/" target="_blank" rel="noopener">Marek Minor</a>. Icons © Cursor. Unofficial educational project, not affiliated.</span>
           </p>
         </aside>
         <div class="main">
@@ -1624,6 +2442,9 @@
             </button>
           </div>
           <div class="workspace">
+            <div class="docs-philo-bg" aria-hidden="true">
+              <img src="./assets/docs/design-philosophy-empty.png" width="1024" height="1024" alt="" loading="lazy" decoding="async" />
+            </div>
             <section class="grid-wrap" id="home-view">
               <div class="home-scroll">
                 <div class="home-masthead-logos">
@@ -1684,7 +2505,7 @@
             <section class="page hidden docs" id="docs-add">
               <article class="docs-editorial">
                 <div class="docs-editorial-copy">
-                  <p>A set that can’t grow decays, so the last deliverable is the pipeline that keeps the system alive after the drawing is done.</p>
+                  <p>A set that can’t grow decays, so the last deliverable is the pipeline that keeps the system alive after the drawing is done.<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup></p>
 
                   <p><strong>Ship it pipeline</strong><br />Here’s how an icon gets published:</p>
 
@@ -1701,52 +2522,156 @@
                     <div class="docs-terminal-body"><span class="prompt">&gt; </span><span class="docs-terminal-cmd"></span><span class="cursor"></span></div>
                   </div>
 
-                  <p>That single command replaces a long chain of work. It registers any new SVGs and assigns them their codepoints. It compiles every icon into four fonts, one for each size and style, in each format the product needs. It merges the stylesheets into one. It rewrites the metadata inside each font file so the families are named correctly, because font compilers name things however they like. It regenerates the data the companion site runs on, so every icon, codepoint and tag on the site matches what’s actually in the font. It rebuilds the site. It checks that the documentation isn’t quoting an icon count from three weeks ago. Then it commits and pushes.</p>
+                  <p>That single command replaces a long chain of work. It registers any new SVGs and assigns them their codepoints. It compiles every icon into four fonts, one for each size and style, in each format the product needs. It merges the stylesheets into one. It rewrites the metadata inside each font file so the families are named correctly, because font compilers name things however they like. It regenerates the data the companion site runs on, so every icon, codepoint and tag on the site matches what’s actually in the font. It rebuilds the site. It checks that the documentation isn’t quoting an icon count from three weeks ago. Then it commits and pushes.<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup></p>
 
                   <p>Doing all of that by hand is an afternoon of work, and one of the steps always gets missed. Typing <strong>ship it</strong> takes a second.</p>
 
-                  <p>The exported SVGs, the icon fonts, the icon data and both sites live in a single repository, so a new icon travels from Figma to shipped in a single step. The system doesn’t depend on me remembering anything. It’s written down, it’s automated, and it’s handed over in a state where adding the next icon is routine.</p>
+                  <p>The exported SVGs, the icon fonts, the icon data and both sites live in a single repository, so a new icon travels from Figma to shipped in a single step. The system doesn’t depend on me remembering anything. It’s written down, it’s automated, and it’s handed over in a state where adding the next icon is routine.<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup></p>
                 </div>
+                <aside class="docs-sources" aria-label="Sources">
+                  <ol>
+                    <li><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener">The making of Cursor’s icons</a>, Marek Minor · Minor Adventures</li>
+                  </ol>
+                </aside>
               </article>
             </section>
             <section class="page hidden docs" id="docs-philo">
-              <div class="docs-soon" role="status">
-                <span class="docs-soon-line" aria-hidden="true"></span>
-                <p class="docs-soon-note">Design philosophy behind the set: <a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons">Marek Minor’s essay</a>.</p>
+              <div class="docs-philo-hero">
+                <img src="./assets/docs/design-philosophy-empty.png" width="1024" height="1024" alt="" loading="lazy" decoding="async" />
+                <p class="docs-philo-soon">coming soon</p>
               </div>
+              <aside class="docs-sources docs-philo-sources" aria-label="Sources">
+                <ol>
+                  <li><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener">The making of Cursor’s icons</a>, Marek Minor · Minor Adventures</li>
+                </ol>
+              </aside>
+            </section>
+            <section class="page hidden docs" id="docs-comparativa">
+              <article class="docs-comparativa-page">
+                <div class="docs-editorial-copy">
+                  <p>Small details matter. Marek Minor walks through refinements that keep icons crisp at small sizes. Trimming stroke weight where lines meet, and opening tight corners where strokes collide.<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup></p>
+                </div>
+                <div class="cmp-tabs cmp-tabs-main" id="cmp-set-seg" role="tablist" aria-label="Detail type">
+                  <button type="button" data-cmp-set-tab="thinning" class="on" role="tab" aria-selected="true">Stroke thinning</button>
+                  <button type="button" data-cmp-set-tab="breaks" role="tab" aria-selected="false">Optical breaks</button>
+                </div>
+                <section class="cmp-block" data-cmp-panel="thinning">
+                  <p class="cmp-block-lead">Trimming weight where strokes converge so icons don’t feel heavy at 16px.<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup></p>
+                  <div class="cmp-widget" data-cmp-set="thinning">
+                    <div class="cmp-selectors" data-cmp-selectors role="toolbar" aria-label="Stroke thinning icons"></div>
+                    <div class="cmp-tabs cmp-tabs-sm" data-cmp-mode-seg role="tablist" aria-label="Stroke thinning comparison mode">
+                      <button type="button" data-cmp-mode="before" role="tab" aria-selected="false">Before</button>
+                      <button type="button" data-cmp-mode="after" role="tab" aria-selected="false">After</button>
+                      <button type="button" data-cmp-mode="diff" class="on" role="tab" aria-selected="true">Diff</button>
+                    </div>
+                    <div class="cmp-display">
+                      <div class="cmp-viewport" data-cmp-viewport>
+                        <div class="cmp-canvas" data-cmp-canvas>
+                          <div class="cmp-icon-stage" data-cmp-stage></div>
+                        </div>
+                        <div class="cmp-viewport-chrome">
+                          <div class="cmp-zoom-bar hidden" data-cmp-zoom-bar>
+                            <button type="button" data-cmp-zoom-out aria-label="Zoom out">−</button>
+                            <button type="button" data-cmp-zoom-label data-cmp-zoom-reset aria-label="Reset zoom">200%</button>
+                            <button type="button" data-cmp-zoom-in aria-label="Zoom in">+</button>
+                          </div>
+                          <span class="cmp-mode-label" data-cmp-mode-label>Diff</span>
+                          <div class="cmp-legend hidden" data-cmp-legend aria-hidden="true">
+                            <span class="cmp-legend-item"><i class="cmp-swatch cmp-swatch-before" aria-hidden="true"></i> Before</span>
+                            <span class="cmp-legend-item"><i class="cmp-swatch cmp-swatch-after" aria-hidden="true"></i> After</span>
+                          </div>
+                          <p class="cmp-diff-hint hidden" data-cmp-diff-hint>Scroll to zoom · drag to pan · double-click to reset</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="cmp-caption">In diff view, red is before and green is after. Scroll to zoom in on stroke changes.</p>
+                  </div>
+                </section>
+                <section class="cmp-block hidden" data-cmp-panel="breaks">
+                  <p class="cmp-block-lead">Opening narrow corners where strokes meet so junctions read cleanly.<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup></p>
+                  <div class="cmp-widget" data-cmp-set="breaks">
+                    <div class="cmp-selectors" data-cmp-selectors role="toolbar" aria-label="Optical breaks icons"></div>
+                    <div class="cmp-tabs cmp-tabs-sm" data-cmp-mode-seg role="tablist" aria-label="Optical breaks comparison mode">
+                      <button type="button" data-cmp-mode="before" role="tab" aria-selected="false">Before</button>
+                      <button type="button" data-cmp-mode="after" role="tab" aria-selected="false">After</button>
+                      <button type="button" data-cmp-mode="diff" class="on" role="tab" aria-selected="true">Diff</button>
+                    </div>
+                    <div class="cmp-display">
+                      <div class="cmp-viewport" data-cmp-viewport>
+                        <div class="cmp-canvas" data-cmp-canvas>
+                          <div class="cmp-icon-stage" data-cmp-stage></div>
+                        </div>
+                        <div class="cmp-viewport-chrome">
+                          <div class="cmp-zoom-bar hidden" data-cmp-zoom-bar>
+                            <button type="button" data-cmp-zoom-out aria-label="Zoom out">−</button>
+                            <button type="button" data-cmp-zoom-label data-cmp-zoom-reset aria-label="Reset zoom">200%</button>
+                            <button type="button" data-cmp-zoom-in aria-label="Zoom in">+</button>
+                          </div>
+                          <span class="cmp-mode-label" data-cmp-mode-label>Diff</span>
+                          <div class="cmp-legend hidden" data-cmp-legend aria-hidden="true">
+                            <span class="cmp-legend-item"><i class="cmp-swatch cmp-swatch-before" aria-hidden="true"></i> Before</span>
+                            <span class="cmp-legend-item"><i class="cmp-swatch cmp-swatch-after" aria-hidden="true"></i> After</span>
+                          </div>
+                          <p class="cmp-diff-hint hidden" data-cmp-diff-hint>Scroll to zoom · drag to pan · double-click to reset</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="cmp-caption">Optical breaks open tight corners where strokes would otherwise blob together.</p>
+                  </div>
+                </section>
+                <aside class="docs-sources" aria-label="Sources">
+                  <ol>
+                    <li><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener">The making of Cursor’s icons</a>, Marek Minor · Minor Adventures</li>
+                  </ol>
+                </aside>
+              </article>
             </section>
             <section class="page hidden docs" id="docs-project">
               <article class="docs-project-page">
                 <div class="docs-editorial-copy">
-                  <p>After reading <a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons">Marek Minor’s essay</a> on Minor Adventures, and sitting with the <strong>six screenshots</strong> published in that blog post, I decided to <strong>rebuild the tool</strong> featured in the article. I extracted every glyph from the app’s <strong>WOFF font</strong> with a small Python script so the icons could be browsed, searched, and enjoyed outside the product.</p>
+                  <p>After reading Marek Minor’s essay on Minor Adventures<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup>, and sitting with the <strong>six screenshots</strong> published in that blog post, I decided to <strong>rebuild the tool</strong> featured in the article. I extracted every glyph from the app’s <strong>WOFF font</strong> with a small Python script so the icons could be browsed, searched, and enjoyed outside the product.</p>
                   <p>What Minor and Cursor built is a <strong>masterclass in design</strong>, the kind of work <strong>worth defending</strong> when everything else defaults to slop. It isn’t just a pretty icon set; it’s proof of what design is for: <strong>clarity, consistency, and care at scale</strong>. That’s the value this project celebrates.</p>
-                  <p>This is a <a href="https://shiftr.pro" target="_blank" rel="noopener">Shift+R</a> class project with <strong>no commercial intent</strong>: an unofficial <strong>tribute to craft</strong> in the age of AI slop, <strong>not piracy</strong>. The images and context in the carousel below are taken from <a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons">Minor’s blog</a>; this rebuild is my own take on the same idea: <strong>600+ icons, concepts, and file types</strong> in one place.</p>
+                  <p>This is a <a href="https://shiftr.pro" target="_blank" rel="noopener">Shift+R</a> class project with <strong>no commercial intent</strong>: an unofficial <strong>tribute to craft</strong> in the age of AI slop, <strong>not piracy</strong>. The images below are taken from Minor’s blog<sup class="docs-ref"><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener" aria-label="Source: The making of Cursor's icons">1</a></sup>; this rebuild is my own take on the same idea: <strong>600+ icons, concepts, and file types</strong> in one place.</p>
                 </div>
-                <div class="docs-carousel" id="project-carousel" aria-roledescription="carousel">
-                  <button type="button" class="docs-carousel-arrow" id="project-carousel-prev" aria-label="Previous screenshot">←</button>
-                  <div class="docs-carousel-track" id="project-carousel-track">
-                    <figure class="docs-carousel-slide">
-                      <img src="./assets/project/03-icons-grid.webp" width="1200" height="800" alt="Icon grid screenshot from Marek Minor's blog post" />
-                    </figure>
-                    <figure class="docs-carousel-slide">
-                      <img src="./assets/project/02-concepts.webp" width="800" height="600" alt="Concepts table screenshot from Marek Minor's blog post" />
-                    </figure>
-                    <figure class="docs-carousel-slide">
-                      <img src="./assets/project/04-search.webp" width="800" height="600" alt="Search screenshot from Marek Minor's blog post" />
-                    </figure>
-                    <figure class="docs-carousel-slide">
-                      <img src="./assets/project/05-file-types.webp" width="800" height="600" alt="File types screenshot from Marek Minor's blog post" />
-                    </figure>
-                    <figure class="docs-carousel-slide">
-                      <img src="./assets/project/01-tooltip.webp" width="800" height="600" alt="Icon detail screenshot from Marek Minor's blog post" />
-                    </figure>
-                    <figure class="docs-carousel-slide">
-                      <img src="./assets/project/06-inspector.webp" width="800" height="600" alt="Inspector screenshot from Marek Minor's blog post" />
-                    </figure>
+                <aside class="docs-sources" aria-label="Sources">
+                  <ol>
+                    <li><a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener">The making of Cursor’s icons</a>, Marek Minor · Minor Adventures</li>
+                  </ol>
+                </aside>
+                <div class="project-marquee-bleed">
+                  <div class="project-marquee" id="project-marquee">
+                    <div class="project-marquee-track" id="project-marquee-track"></div>
                   </div>
-                  <button type="button" class="docs-carousel-arrow" id="project-carousel-next" aria-label="Next screenshot">→</button>
+                  <div class="project-marquee-overlay" aria-hidden="true"></div>
+                  <div class="project-marquee-cursor" id="project-marquee-cursor" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
+                      <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/>
+                      <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/>
+                      <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                    </svg>
+                  </div>
                 </div>
               </article>
+            </section>
+            <section class="page hidden" id="gallery-view">
+              <div class="gallery-page">
+                <header class="gallery-head">
+                  <div class="gallery-head-top">
+                    <div class="gallery-head-copy">
+                      <h1>Gallery</h1>
+                      <p>Frames and motion studies from Marek Minor’s essay on Cursor’s icon system.</p>
+                    </div>
+                    <div class="gallery-size slide">
+                      <span class="gallery-size-label">Tile size</span>
+                      <span class="gallery-size-hint" aria-hidden="true">S</span>
+                      <input id="gallery-size" type="range" min="1" max="5" step="1" value="3" aria-label="Gallery tile size" />
+                      <span class="gallery-size-hint" aria-hidden="true">L</span>
+                    </div>
+                  </div>
+                </header>
+                <div class="gallery-masonry" id="gallery-bento" aria-live="polite"></div>
+              </div>
             </section>
           </div>
           <div class="foot hidden" id="foot">
@@ -1801,6 +2726,7 @@
         selected: null,
         dark: false,
         sidebar: true,
+        gallerySize: 3,
       };
 
       let data = { icons: [], concepts: [], count: 0 };
@@ -1817,7 +2743,276 @@
 
       const renderToolbarIcons = () => {
         document.getElementById("burger").innerHTML = uiIcon("menu");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (mobileMenu) mobileMenu.innerHTML = uiIcon("menu");
         document.getElementById("theme").innerHTML = uiIcon(state.dark ? "sun" : "moon");
+      };
+
+      const mobileNavMq = window.matchMedia("(max-width: 860px)");
+
+      const syncSidebar = () => {
+        const sidebar = document.getElementById("sidebar");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const mobile = mobileNavMq.matches;
+        if (mobile) {
+          sidebar.classList.remove("hidden");
+          document.body.classList.toggle("nav-open", state.sidebar);
+          if (mobileMenu) mobileMenu.setAttribute("aria-expanded", state.sidebar ? "true" : "false");
+        } else {
+          document.body.classList.remove("nav-open");
+          sidebar.classList.toggle("hidden", !state.sidebar);
+          if (mobileMenu) mobileMenu.setAttribute("aria-expanded", "false");
+        }
+      };
+
+      const closeMobileNav = () => {
+        if (!mobileNavMq.matches || !state.sidebar) return;
+        state.sidebar = false;
+        syncSidebar();
+      };
+
+      const toggleSidebar = () => {
+        state.sidebar = !state.sidebar;
+        syncSidebar();
+      };
+
+      let navLoaderTimer;
+      let revealCtrl = { cancel: false };
+
+      const getDocsFadeTargets = (page) => {
+        const root = document.getElementById(page);
+        if (!root) return [];
+        return [
+          ...root.querySelectorAll(".docs-soon-line, .docs-philo-hero, .docs-philo-sources, .docs-editorial-copy > p, .docs-pipeline, .docs-soon-note, .cmp-block:not(.hidden) > .cmp-block-lead, .docs-terminal, .docs-sources, .cmp-tabs-main, .cmp-widget, .cmp-caption, .project-marquee-bleed"),
+        ];
+      };
+
+      const resetDocsFade = (root) => {
+        if (!root) return;
+        root.querySelectorAll(".docs-fade").forEach((el) => {
+          el.classList.remove("docs-fade", "is-visible");
+        });
+      };
+
+      const revealDocsPage = (page) => {
+        if (!page.startsWith("docs")) return;
+        revealCtrl.cancel = true;
+        const ctrl = { cancel: false };
+        revealCtrl = ctrl;
+
+        const root = document.getElementById(page);
+        if (!root || root.classList.contains("hidden")) return;
+
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const targets = getDocsFadeTargets(page);
+
+        resetDocsFade(root);
+
+        if (reducedMotion) {
+          if (page === "docs-add") runShipTerminal();
+          return;
+        }
+
+        targets.forEach((el, i) => {
+          el.classList.add("docs-fade");
+          setTimeout(() => {
+            if (ctrl.cancel) return;
+            el.classList.add("is-visible");
+            if (page === "docs-add" && el.matches(".docs-terminal")) runShipTerminal();
+          }, 40 + i * 85);
+        });
+      };
+
+      let galleryObserver;
+      let galleryMasonryTimer;
+      let galleryResizeBound = false;
+
+      const getGalleryColumnBounds = () => {
+        const w = window.innerWidth;
+        if (w < 560) return { min: 2, max: 3 };
+        if (w < 900) return { min: 2, max: 4 };
+        if (w < 1280) return { min: 2, max: 5 };
+        return { min: 2, max: 6 };
+      };
+
+      const gallerySizeToColumnCount = (size = state.gallerySize) => {
+        const { min, max } = getGalleryColumnBounds();
+        const t = (Math.min(5, Math.max(1, size)) - 1) / 4;
+        return Math.round(max - t * (max - min));
+      };
+
+      const getGalleryGap = (cols) => (cols <= 2 ? 18 : cols <= 3 ? 16 : cols <= 4 ? 14 : 12);
+
+      const GALLERY_SKELETON_HEIGHTS = [280, 156, 224, 140, 268, 184, 204, 148, 244, 172, 212, 192, 232, 160, 276, 168, 208, 180];
+
+      const renderGallerySkeleton = () => {
+        const grid = document.getElementById("gallery-bento");
+        if (!grid) return;
+        grid.classList.add("is-loading");
+        grid.setAttribute("aria-busy", "true");
+        grid.innerHTML = GALLERY_SKELETON_HEIGHTS.map((height) =>
+          `<div class="gallery-skeleton-item" style="--sh:${height}px"><span class="gallery-skeleton-shimmer" aria-hidden="true"></span></div>`
+        ).join("");
+        layoutGalleryMasonry();
+      };
+
+      const scheduleGalleryMasonry = () => {
+        clearTimeout(galleryMasonryTimer);
+        galleryMasonryTimer = setTimeout(layoutGalleryMasonry, 90);
+      };
+
+      const syncGallerySizeControl = () => {
+        const input = document.getElementById("gallery-size");
+        if (!input) return;
+        input.value = String(state.gallerySize);
+      };
+
+      const initGallerySizeControl = () => {
+        const input = document.getElementById("gallery-size");
+        if (!input || input.dataset.bound) return;
+        input.dataset.bound = "1";
+        syncGallerySizeControl();
+        input.addEventListener("input", () => {
+          state.gallerySize = Number(input.value);
+          layoutGalleryMasonry();
+        });
+        if (!galleryResizeBound) {
+          galleryResizeBound = true;
+          window.addEventListener("resize", scheduleGalleryMasonry);
+        }
+      };
+
+      const layoutGalleryMasonry = () => {
+        const grid = document.getElementById("gallery-bento");
+        if (!grid) return;
+        const selector = grid.classList.contains("is-loading") ? ".gallery-skeleton-item" : ".gallery-item";
+        const items = [...grid.querySelectorAll(selector)];
+        if (!items.length) return;
+        const cols = gallerySizeToColumnCount();
+        const gap = getGalleryGap(cols);
+        grid.style.setProperty("--gallery-gap", `${gap}px`);
+        grid.querySelectorAll(".gallery-col").forEach((col) => col.remove());
+        const columns = Array.from({ length: cols }, () => {
+          const col = document.createElement("div");
+          col.className = "gallery-col";
+          grid.appendChild(col);
+          return col;
+        });
+        items.forEach((item) => {
+          let shortest = columns[0];
+          columns.forEach((col) => {
+            if (col.offsetHeight < shortest.offsetHeight) shortest = col;
+          });
+          shortest.appendChild(item);
+        });
+      };
+
+      const pauseGalleryVideos = () => {
+        document.querySelectorAll("#gallery-bento video").forEach((video) => {
+          video.pause();
+        });
+      };
+
+      const revealGallery = () => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.querySelectorAll("#gallery-bento .gallery-item").forEach((el, i) => {
+          el.classList.remove("docs-fade", "is-visible");
+          if (reducedMotion) return;
+          el.classList.add("docs-fade");
+          setTimeout(() => el.classList.add("is-visible"), 24 + i * 28);
+        });
+      };
+
+      const initGallery = async () => {
+        const grid = document.getElementById("gallery-bento");
+        if (!grid) return;
+        if (grid.dataset.layout === "4") {
+          initGallerySizeControl();
+          syncGallerySizeControl();
+          layoutGalleryMasonry();
+          revealGallery();
+          if (document.body.dataset.page === "gallery") {
+            grid.querySelectorAll("video").forEach((video) => video.play().catch(() => {}));
+          }
+          return;
+        }
+        renderGallerySkeleton();
+        initGallerySizeControl();
+        try {
+          const res = await fetch("./gallery.json");
+          const items = await res.json();
+          grid.classList.remove("is-loading");
+          grid.removeAttribute("aria-busy");
+          grid.innerHTML = items.map((item) => {
+            const src = `./assets/gallery/${item.src}`;
+            const inner = item.type === "video"
+              ? `<video src="${src}" muted loop playsinline preload="metadata" aria-label="${item.title}"></video>`
+              : `<img src="${src}" alt="${item.title}" loading="lazy" decoding="async" />`;
+            return `<figure class="gallery-item"><div class="gallery-media">${inner}</div><figcaption class="gallery-cap">${item.title}</figcaption></figure>`;
+          }).join("");
+          grid.dataset.layout = "4";
+          initGallerySizeControl();
+          layoutGalleryMasonry();
+          grid.querySelectorAll("img").forEach((img) => {
+            if (img.complete) return;
+            img.addEventListener("load", scheduleGalleryMasonry, { once: true });
+          });
+          grid.querySelectorAll("video").forEach((video) => {
+            video.addEventListener("loadedmetadata", scheduleGalleryMasonry, { once: true });
+          });
+          galleryObserver?.disconnect();
+          galleryObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              const video = entry.target;
+              if (document.body.dataset.page !== "gallery") return;
+              if (entry.isIntersecting) video.play().catch(() => {});
+              else video.pause();
+            });
+          }, { threshold: 0.35 });
+          grid.querySelectorAll("video").forEach((video) => galleryObserver.observe(video));
+          revealGallery();
+        } catch {
+          grid.classList.remove("is-loading");
+          grid.removeAttribute("aria-busy");
+          grid.innerHTML = `<p style="color:var(--muted);font-size:14px;">Could not load gallery assets.</p>`;
+        }
+      };
+
+      const dotGridLoaderHtml = () =>
+        `<span class="side-link-loader" aria-hidden="true"><svg class="dot-grid-loader" viewBox="0 0 10.5 10.5" aria-hidden="true"><circle cx="1.25" cy="1.25" r="1.125"/><circle cx="5.25" cy="1.25" r="1.125"/><circle cx="9.25" cy="1.25" r="1.125"/><circle cx="1.25" cy="5.25" r="1.125"/><circle cx="5.25" cy="5.25" r="1.125"/><circle cx="9.25" cy="5.25" r="1.125"/><circle cx="1.25" cy="9.25" r="1.125"/><circle cx="5.25" cy="9.25" r="1.125"/><circle cx="9.25" cy="9.25" r="1.125"/></svg></span>`;
+
+      const initSideLinks = () => {
+        document.querySelectorAll(".side-link").forEach((btn) => {
+          if (btn.dataset.navReady) return;
+          btn.dataset.navReady = "1";
+          const label = btn.textContent.trim();
+          btn.innerHTML = `${dotGridLoaderHtml()}<span class="side-link-label">${label}</span>`;
+        });
+      };
+
+      const navigateSide = (page, btn) => {
+        if (page === state.page) {
+          closeMobileNav();
+          return;
+        }
+        clearTimeout(navLoaderTimer);
+        document.querySelectorAll(".side-link").forEach((b) => b.classList.remove("is-loading"));
+        btn.classList.add("is-loading");
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const delay = reducedMotion ? 0 : 760;
+        const go = () => {
+          setPage(page);
+          btn.classList.remove("is-loading");
+          closeMobileNav();
+        };
+        if (delay) navLoaderTimer = setTimeout(go, delay);
+        else go();
+      };
+
+      const initMobileNav = () => {
+        if (mobileNavMq.matches) state.sidebar = false;
+        else if (!state.sidebar) state.sidebar = true;
+        syncSidebar();
       };
 
       const svg = (icon, size) =>
@@ -1970,57 +3165,190 @@
 
       let shipTerminalTimer;
       const PROJECT_SLIDES = [
-        { src: "./assets/project/03-icons-grid.webp", alt: "Icon grid screenshot from Marek Minor's blog post", label: "Icon grid" },
-        { src: "./assets/project/02-concepts.webp", alt: "Concepts table screenshot from Marek Minor's blog post", label: "Concepts" },
-        { src: "./assets/project/04-search.webp", alt: "Search screenshot from Marek Minor's blog post", label: "Search" },
-        { src: "./assets/project/05-file-types.webp", alt: "File types screenshot from Marek Minor's blog post", label: "File types" },
-        { src: "./assets/project/01-tooltip.webp", alt: "Icon detail screenshot from Marek Minor's blog post", label: "Icon detail" },
-        { src: "./assets/project/06-inspector.webp", alt: "Inspector screenshot from Marek Minor's blog post", label: "Inspector" },
+        { src: "./assets/project/03-icons-grid.webp", alt: "Icon grid screenshot from Marek Minor's blog post" },
+        { src: "./assets/project/02-concepts.webp", alt: "Concepts table screenshot from Marek Minor's blog post" },
+        { src: "./assets/project/04-search.webp", alt: "Search screenshot from Marek Minor's blog post" },
+        { src: "./assets/project/05-file-types.webp", alt: "File types screenshot from Marek Minor's blog post" },
+        { src: "./assets/project/01-tooltip.webp", alt: "Icon detail screenshot from Marek Minor's blog post" },
+        { src: "./assets/project/06-inspector.webp", alt: "Inspector screenshot from Marek Minor's blog post" },
       ];
-      let projectSlideIndex = 0;
-      let projectCarouselReady = false;
-      let projectAutoplayTimer;
 
-      const getProjectTrack = () => document.getElementById("project-carousel-track");
-      const projectSlideCount = () => getProjectTrack()?.children.length || PROJECT_SLIDES.length;
+      const initProjectMarquee = () => {
+        const marquee = document.getElementById("project-marquee");
+        const track = document.getElementById("project-marquee-track");
+        const cursorEl = document.getElementById("project-marquee-cursor");
+        if (!marquee || !track || track.dataset.ready) return;
 
-      const setProjectSlide = (index) => {
-        const track = getProjectTrack();
-        if (!track) return;
-        projectSlideIndex = (index + projectSlideCount()) % projectSlideCount();
-        track.scrollTo({ left: track.clientWidth * projectSlideIndex, behavior: "smooth" });
-      };
+        const renderSlide = (slide, index) =>
+          `<figure class="project-marquee-slide"><img src="${slide.src}" alt="${slide.alt}" loading="lazy" draggable="false" /><figcaption class="project-marquee-slide-label">${index + 1} of ${PROJECT_SLIDES.length}</figcaption></figure>`;
 
-      const stopProjectAutoplay = () => clearInterval(projectAutoplayTimer);
+        const loopSlides = [...PROJECT_SLIDES, ...PROJECT_SLIDES, ...PROJECT_SLIDES];
+        track.innerHTML = loopSlides.map((slide, i) => renderSlide(slide, i % PROJECT_SLIDES.length)).join("");
+        track.dataset.ready = "1";
 
-      const startProjectAutoplay = () => {
-        stopProjectAutoplay();
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        projectAutoplayTimer = setInterval(() => {
-          if (state.page === "docs-project") setProjectSlide(projectSlideIndex + 1);
-        }, 4500);
-      };
+        const slideCount = PROJECT_SLIDES.length;
 
-      const initProjectCarousel = () => {
-        const track = getProjectTrack();
-        const carousel = document.getElementById("project-carousel");
-        const prev = document.getElementById("project-carousel-prev");
-        const next = document.getElementById("project-carousel-next");
-        if (!track || !prev || !next || !carousel) return;
-        if (!projectCarouselReady) {
-          prev.onclick = () => { setProjectSlide(projectSlideIndex - 1); startProjectAutoplay(); };
-          next.onclick = () => { setProjectSlide(projectSlideIndex + 1); startProjectAutoplay(); };
-          track.addEventListener("scroll", () => {
-            const i = Math.round(track.scrollLeft / track.clientWidth);
-            if (i !== projectSlideIndex) projectSlideIndex = i;
-          }, { passive: true });
-          carousel.addEventListener("mouseenter", stopProjectAutoplay);
-          carousel.addEventListener("mouseleave", startProjectAutoplay);
-          projectCarouselReady = true;
+        const measureLoop = () => {
+          const slides = track.querySelectorAll(".project-marquee-slide");
+          if (slides.length < slideCount * 2) return 0;
+          return slides[slideCount].offsetLeft - slides[0].offsetLeft;
+        };
+
+        const normalizeScroll = () => {
+          const loopWidth = measureLoop();
+          if (loopWidth <= 0) return;
+          marquee.dataset.loopWidth = String(loopWidth);
+          if (marquee.scrollLeft >= loopWidth * 2) {
+            marquee.scrollLeft -= loopWidth;
+            if (drag) drag.left -= loopWidth;
+          } else if (marquee.scrollLeft < loopWidth) {
+            marquee.scrollLeft += loopWidth;
+            if (drag) drag.left += loopWidth;
+          }
+        };
+
+        const setupLoop = () => {
+          const loopWidth = measureLoop();
+          if (loopWidth <= 0) return;
+          marquee.dataset.loopWidth = loopWidth;
+          if (!marquee.dataset.loopReady) {
+            marquee.scrollLeft = loopWidth;
+            marquee.dataset.loopReady = "1";
+          } else {
+            normalizeScroll();
+          }
+        };
+
+        Promise.all([...track.querySelectorAll("img")].map((img) =>
+          img.complete ? Promise.resolve() : new Promise((resolve) => { img.onload = img.onerror = resolve; })
+        )).then(setupLoop);
+
+        if (!marquee.dataset.resizeBound) {
+          marquee.dataset.resizeBound = "1";
+          window.addEventListener("resize", setupLoop);
         }
-        track.scrollLeft = 0;
-        projectSlideIndex = 0;
-        startProjectAutoplay();
+
+        if (marquee.dataset.dragBound) return;
+        marquee.dataset.dragBound = "1";
+
+        let drag = null;
+        let inertiaId = null;
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const finePointer = window.matchMedia("(pointer: fine)").matches;
+
+        const stopInertia = () => {
+          if (inertiaId) cancelAnimationFrame(inertiaId);
+          inertiaId = null;
+        };
+
+        const startInertia = (velocity) => {
+          if (reducedMotion || Math.abs(velocity) < 0.12) return;
+          stopInertia();
+          let v = velocity;
+          const step = () => {
+            if (Math.abs(v) < 0.06) {
+              inertiaId = null;
+              return;
+            }
+            marquee.scrollLeft -= v;
+            normalizeScroll();
+            v *= 0.968;
+            inertiaId = requestAnimationFrame(step);
+          };
+          inertiaId = requestAnimationFrame(step);
+        };
+
+        const placeCursor = (x, y) => {
+          if (!cursorEl) return;
+          cursorEl.style.left = `${x}px`;
+          cursorEl.style.top = `${y}px`;
+        };
+
+        const showCursor = () => {
+          if (!cursorEl || !finePointer) return;
+          cursorEl.classList.add("is-visible");
+        };
+
+        const hideCursor = () => {
+          if (!cursorEl) return;
+          cursorEl.classList.remove("is-visible", "is-dragging");
+        };
+
+        marquee.addEventListener("mouseenter", (e) => {
+          showCursor();
+          placeCursor(e.clientX, e.clientY);
+        });
+
+        marquee.addEventListener("mouseleave", () => {
+          hideCursor();
+        });
+
+        marquee.addEventListener("mousemove", (e) => {
+          if (finePointer) placeCursor(e.clientX, e.clientY);
+        });
+
+        const beginDrag = (clientX) => {
+          stopInertia();
+          drag = {
+            x: clientX,
+            left: marquee.scrollLeft,
+            lastX: clientX,
+            lastT: performance.now(),
+            velocity: 0,
+            velocities: [],
+          };
+          marquee.classList.add("is-dragging");
+          cursorEl?.classList.add("is-dragging");
+        };
+
+        const moveDrag = (clientX) => {
+          if (!drag) return;
+          const now = performance.now();
+          const dt = now - drag.lastT;
+          if (dt > 0) {
+            const instant = ((clientX - drag.lastX) / dt) * 16;
+            drag.velocities.push(instant);
+            if (drag.velocities.length > 6) drag.velocities.shift();
+            drag.velocity = drag.velocities.reduce((a, b) => a + b, 0) / drag.velocities.length;
+          }
+          drag.lastX = clientX;
+          drag.lastT = now;
+          marquee.scrollLeft = drag.left - (clientX - drag.x);
+          normalizeScroll();
+        };
+
+        const endDrag = () => {
+          if (!drag) return;
+          const velocity = drag.velocity;
+          drag = null;
+          marquee.classList.remove("is-dragging");
+          cursorEl?.classList.remove("is-dragging");
+          startInertia(velocity);
+        };
+
+        marquee.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          beginDrag(e.clientX);
+          e.preventDefault();
+        });
+
+        marquee.addEventListener("touchstart", (e) => {
+          if (e.touches.length !== 1) return;
+          beginDrag(e.touches[0].clientX);
+        }, { passive: true });
+
+        document.addEventListener("mousemove", (e) => {
+          if (!drag) return;
+          moveDrag(e.clientX);
+        });
+
+        document.addEventListener("touchmove", (e) => {
+          if (!drag || !e.touches.length) return;
+          moveDrag(e.touches[0].clientX);
+        }, { passive: true });
+
+        document.addEventListener("mouseup", endDrag);
+        document.addEventListener("touchend", endDrag);
       };
 
       const runShipTerminal = () => {
@@ -2043,6 +3371,7 @@
 
       const setPage = (page) => {
         const prev = state.page;
+        if (prev === "gallery") pauseGalleryVideos();
         state.page = page;
         document.body.dataset.page = page;
         if (page === "files" && prev !== "files") {
@@ -2061,9 +3390,11 @@
         document.getElementById("concepts-view").classList.toggle("hidden", page !== "concepts");
         document.getElementById("docs-add").classList.toggle("hidden", page !== "docs-add");
         document.getElementById("docs-philo").classList.toggle("hidden", page !== "docs-philo");
+        document.getElementById("docs-comparativa").classList.toggle("hidden", page !== "docs-comparativa");
         document.getElementById("docs-project").classList.toggle("hidden", page !== "docs-project");
+        document.getElementById("gallery-view").classList.toggle("hidden", page !== "gallery");
         document.getElementById("foot").classList.toggle("hidden", page !== "icons");
-        document.getElementById("search-wrap").classList.toggle("hidden", page.startsWith("docs") || page === "home");
+        document.getElementById("search-wrap").classList.toggle("hidden", page.startsWith("docs") || page === "home" || page === "gallery");
         syncFileToolbar();
         document.getElementById("q").placeholder =
           page === "concepts" ? "Search concepts..." :
@@ -2073,13 +3404,320 @@
         dismissModal();
         render();
         renderInspector();
-        if (page === "docs-add") requestAnimationFrame(runShipTerminal);
-        if (page === "docs-project") {
-          projectSlideIndex = 0;
-          requestAnimationFrame(initProjectCarousel);
-        } else {
-          stopProjectAutoplay();
+        if (page === "docs-project") requestAnimationFrame(initProjectMarquee);
+        if (page === "docs-comparativa") requestAnimationFrame(initComparativa);
+        if (page.startsWith("docs")) requestAnimationFrame(() => revealDocsPage(page));
+        if (page === "gallery") requestAnimationFrame(initGallery);
+      };
+
+      const CMP_SETS = {
+        thinning: {
+          base: "./assets/comparativa",
+          icons: [
+            { id: "asterisk", label: "Asterisk" },
+            { id: "cube-transparent", label: "Transparent cube" },
+            { id: "cursor-logo", label: "Cursor logo" },
+            { id: "flask-slash-circle", label: "Flask" },
+            { id: "radio-tower", label: "Radio tower" },
+            { id: "sparkles", label: "Sparkles" },
+          ],
+        },
+        breaks: {
+          base: "./assets/optical-breaks",
+          icons: [
+            { id: "at", label: "At" },
+            { id: "globe", label: "Globe" },
+            { id: "flame", label: "Flame" },
+            { id: "paperplane", label: "Paper plane" },
+            { id: "git-merge", label: "Git merge" },
+            { id: "brackets-curly", label: "Curly brackets" },
+            { id: "text-strikethrough", label: "Strikethrough" },
+          ],
+        },
+      };
+      const cmpState = {
+        thinning: { icon: "asterisk", mode: "diff" },
+        breaks: { icon: "at", mode: "diff" },
+      };
+      let cmpActiveSet = "thinning";
+      const cmpZoom = {
+        thinning: { s: 1, tx: 0, ty: 0 },
+        breaks: { s: 1, tx: 0, ty: 0 },
+      };
+      const CMP_STAGE = 220;
+      const CMP_ZMIN = 1;
+      const CMP_ZMAX = 24;
+      const CMP_DIFF_ZOOM = 2;
+      let cmpPan = null;
+      const cmpSvgRaw = {};
+      const cmpSvgPending = {};
+      const cmpRenderToken = { thinning: 0, breaks: 0 };
+      const CMP_DIFF_BEFORE = "#e5484d";
+      const CMP_DIFF_AFTER = "#30a46c";
+
+      const cmpSrc = (setKey, id, after) =>
+        `${CMP_SETS[setKey].base}/${after ? "after" : "before"}/${id}.svg`;
+
+      const cmpBuildSvg = (url, { color } = {}) => {
+        const raw = cmpSvgRaw[url];
+        if (!raw) return "";
+        const doc = new DOMParser().parseFromString(raw, "image/svg+xml");
+        const svg = doc.documentElement;
+        if (svg.nodeName.toLowerCase() === "parsererror") return raw;
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        svg.setAttribute("class", "cmp-svg");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("focusable", "false");
+        if (color) {
+          svg.querySelectorAll("path, circle, rect, polygon, polyline, ellipse, line").forEach((el) => {
+            const fill = el.getAttribute("fill");
+            if (fill === "none") return;
+            el.setAttribute("fill", color);
+          });
         }
+        return svg.outerHTML;
+      };
+
+      const fetchCmpSvg = (url) => {
+        if (cmpSvgRaw[url]) return Promise.resolve(cmpSvgRaw[url]);
+        if (cmpSvgPending[url]) return cmpSvgPending[url];
+        cmpSvgPending[url] = fetch(url)
+          .then((r) => r.text())
+          .then((text) => {
+            cmpSvgRaw[url] = text;
+            delete cmpSvgPending[url];
+            return text;
+          })
+          .catch(() => {
+            delete cmpSvgPending[url];
+            return "";
+          });
+        return cmpSvgPending[url];
+      };
+
+      const preloadCmpSvgs = () => {
+        const urls = new Set();
+        Object.keys(CMP_SETS).forEach((setKey) => {
+          CMP_SETS[setKey].icons.forEach((icon) => {
+            urls.add(cmpSrc(setKey, icon.id, false));
+            urls.add(cmpSrc(setKey, icon.id, true));
+          });
+        });
+        return Promise.all([...urls].map(fetchCmpSvg));
+      };
+
+      const cmpCenter = (setKey, scale = cmpZoom[setKey]?.s ?? 1) => {
+        const widget = document.querySelector(`[data-cmp-set="${setKey}"]`);
+        const viewport = widget?.querySelector("[data-cmp-viewport]");
+        if (!viewport) return { tx: 0, ty: 0 };
+        const rect = viewport.getBoundingClientRect();
+        const size = CMP_STAGE * scale;
+        return {
+          tx: (rect.width - size) / 2,
+          ty: (rect.height - size) / 2,
+        };
+      };
+
+      const applyCmpZoom = (setKey) => {
+        const widget = document.querySelector(`[data-cmp-set="${setKey}"]`);
+        if (!widget) return;
+        const canvas = widget.querySelector("[data-cmp-canvas]");
+        const stage = widget.querySelector("[data-cmp-stage]");
+        const label = widget.querySelector("[data-cmp-zoom-label]");
+        const { s, tx, ty } = cmpZoom[setKey];
+        const size = CMP_STAGE * s;
+        canvas.style.transform = `translate(${tx}px, ${ty}px)`;
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+        if (stage) {
+          stage.style.width = `${size}px`;
+          stage.style.height = `${size}px`;
+        }
+        if (label) label.textContent = `${Math.round(s * 100)}%`;
+      };
+
+      const resetCmpZoom = (setKey) => {
+        const center = cmpCenter(setKey, CMP_DIFF_ZOOM);
+        cmpZoom[setKey] = { s: CMP_DIFF_ZOOM, tx: center.tx, ty: center.ty };
+        applyCmpZoom(setKey);
+      };
+
+      const cmpZoomAt = (setKey, clientX, clientY, nextScale) => {
+        const widget = document.querySelector(`[data-cmp-set="${setKey}"]`);
+        const viewport = widget?.querySelector("[data-cmp-viewport]");
+        if (!viewport) return;
+        const rect = viewport.getBoundingClientRect();
+        const mx = clientX - rect.left;
+        const my = clientY - rect.top;
+        const z = cmpZoom[setKey];
+        const ns = Math.min(CMP_ZMAX, Math.max(CMP_ZMIN, nextScale));
+        const oldSize = CMP_STAGE * z.s;
+        const newSize = CMP_STAGE * ns;
+        const nx = (mx - z.tx) / oldSize;
+        const ny = (my - z.ty) / oldSize;
+        z.tx = mx - nx * newSize;
+        z.ty = my - ny * newSize;
+        z.s = ns;
+        applyCmpZoom(setKey);
+      };
+
+      const bindCmpZoom = (setKey) => {
+        const widget = document.querySelector(`[data-cmp-set="${setKey}"]`);
+        if (!widget || widget.dataset.zoomBound) return;
+        widget.dataset.zoomBound = "1";
+        const viewport = widget.querySelector("[data-cmp-viewport]");
+
+        viewport.addEventListener("wheel", (e) => {
+          if (cmpState[setKey].mode !== "diff") return;
+          e.preventDefault();
+          const factor = e.deltaY < 0 ? 1.12 : 0.89;
+          cmpZoomAt(setKey, e.clientX, e.clientY, cmpZoom[setKey].s * factor);
+        }, { passive: false });
+
+        viewport.addEventListener("mousedown", (e) => {
+          if (cmpState[setKey].mode !== "diff" || e.button !== 0) return;
+          e.preventDefault();
+          const z = cmpZoom[setKey];
+          cmpPan = { setKey, sx: e.clientX, sy: e.clientY, tx: z.tx, ty: z.ty };
+          viewport.classList.add("is-panning");
+        });
+
+        viewport.addEventListener("dblclick", (e) => {
+          if (cmpState[setKey].mode !== "diff") return;
+          e.preventDefault();
+          resetCmpZoom(setKey);
+        });
+
+        widget.querySelector("[data-cmp-zoom-in]")?.addEventListener("click", () => {
+          const rect = viewport.getBoundingClientRect();
+          cmpZoomAt(setKey, rect.left + rect.width / 2, rect.top + rect.height / 2, cmpZoom[setKey].s * 1.25);
+        });
+        widget.querySelector("[data-cmp-zoom-out]")?.addEventListener("click", () => {
+          const rect = viewport.getBoundingClientRect();
+          cmpZoomAt(setKey, rect.left + rect.width / 2, rect.top + rect.height / 2, cmpZoom[setKey].s / 1.25);
+        });
+        widget.querySelector("[data-cmp-zoom-reset]")?.addEventListener("click", () => resetCmpZoom(setKey));
+      };
+
+      if (!window.__cmpPanBound) {
+        window.__cmpPanBound = true;
+        document.addEventListener("mousemove", (e) => {
+          if (!cmpPan) return;
+          const z = cmpZoom[cmpPan.setKey];
+          z.tx = cmpPan.tx + (e.clientX - cmpPan.sx);
+          z.ty = cmpPan.ty + (e.clientY - cmpPan.sy);
+          applyCmpZoom(cmpPan.setKey);
+        });
+        document.addEventListener("mouseup", () => {
+          if (!cmpPan) return;
+          document.querySelector(`[data-cmp-set="${cmpPan.setKey}"] [data-cmp-viewport]`)?.classList.remove("is-panning");
+          cmpPan = null;
+        });
+      }
+
+      const renderCmpSet = (setKey) => {
+        const widget = document.querySelector(`[data-cmp-set="${setKey}"]`);
+        const config = CMP_SETS[setKey];
+        const state = cmpState[setKey];
+        if (!widget || !config || !state) return;
+
+        const row = widget.querySelector("[data-cmp-selectors]");
+        row.innerHTML = config.icons.map((icon) => `
+          <button type="button" class="${icon.id === state.icon ? "on" : ""}" data-cmp-icon="${icon.id}" aria-label="View ${icon.label}" aria-pressed="${icon.id === state.icon}">
+            <img src="${cmpSrc(setKey, icon.id, false)}" alt="" draggable="false" />
+          </button>`).join("");
+        row.querySelectorAll("[data-cmp-icon]").forEach((btn) => {
+          btn.onclick = () => {
+            state.icon = btn.dataset.cmpIcon;
+            renderCmpSet(setKey);
+          };
+        });
+
+        widget.querySelectorAll("[data-cmp-mode]").forEach((btn) => {
+          const on = btn.dataset.cmpMode === state.mode;
+          btn.classList.toggle("on", on);
+          btn.setAttribute("aria-selected", on ? "true" : "false");
+        });
+
+        const stage = widget.querySelector("[data-cmp-stage]");
+        const legend = widget.querySelector("[data-cmp-legend]");
+        const modeLabel = widget.querySelector("[data-cmp-mode-label]");
+        const viewport = widget.querySelector("[data-cmp-viewport]");
+        const zoomBar = widget.querySelector("[data-cmp-zoom-bar]");
+        const diffHint = widget.querySelector("[data-cmp-diff-hint]");
+        const isDiff = state.mode === "diff";
+
+        viewport.classList.toggle("is-diff", isDiff);
+        zoomBar.classList.toggle("hidden", !isDiff);
+        diffHint.classList.toggle("hidden", !isDiff);
+
+        if (isDiff) {
+          legend.classList.remove("hidden");
+          legend.setAttribute("aria-hidden", "false");
+          modeLabel.textContent = "Diff";
+          const token = ++cmpRenderToken[setKey];
+          const beforeUrl = cmpSrc(setKey, state.icon, false);
+          const afterUrl = cmpSrc(setKey, state.icon, true);
+          Promise.all([fetchCmpSvg(beforeUrl), fetchCmpSvg(afterUrl)]).then(() => {
+            if (token !== cmpRenderToken[setKey]) return;
+            stage.innerHTML = `
+              <div class="cmp-layer cmp-diff-before">${cmpBuildSvg(beforeUrl, { color: CMP_DIFF_BEFORE })}</div>
+              <div class="cmp-layer cmp-diff-after">${cmpBuildSvg(afterUrl, { color: CMP_DIFF_AFTER })}</div>`;
+            requestAnimationFrame(() => resetCmpZoom(setKey));
+          });
+        } else {
+          legend.classList.add("hidden");
+          legend.setAttribute("aria-hidden", "true");
+          modeLabel.textContent = state.mode === "after" ? "After" : "Before";
+          const token = ++cmpRenderToken[setKey];
+          const after = state.mode === "after";
+          const url = cmpSrc(setKey, state.icon, after);
+          fetchCmpSvg(url).then(() => {
+            if (token !== cmpRenderToken[setKey]) return;
+            stage.innerHTML = cmpBuildSvg(url);
+          });
+          const canvas = widget.querySelector("[data-cmp-canvas]");
+          canvas.style.transform = "";
+          canvas.style.width = "";
+          canvas.style.height = "";
+          stage.style.width = "";
+          stage.style.height = "";
+        }
+      };
+
+      const initComparativa = () => {
+        const setSeg = document.getElementById("cmp-set-seg");
+        if (setSeg && !setSeg.dataset.bound) {
+          setSeg.dataset.bound = "1";
+          setSeg.querySelectorAll("[data-cmp-set-tab]").forEach((btn) => {
+            btn.onclick = () => {
+              cmpActiveSet = btn.dataset.cmpSetTab;
+              setSeg.querySelectorAll("[data-cmp-set-tab]").forEach((b) => {
+                const on = b.dataset.cmpSetTab === cmpActiveSet;
+                b.classList.toggle("on", on);
+                b.setAttribute("aria-selected", on ? "true" : "false");
+              });
+              document.querySelectorAll("[data-cmp-panel]").forEach((panel) => {
+                panel.classList.toggle("hidden", panel.dataset.cmpPanel !== cmpActiveSet);
+              });
+            };
+          });
+        }
+        document.querySelectorAll("[data-cmp-set]").forEach((widget) => {
+          const setKey = widget.dataset.cmpSet;
+          if (!widget.dataset.bound) {
+            widget.dataset.bound = "1";
+            widget.querySelectorAll("[data-cmp-mode]").forEach((btn) => {
+              btn.onclick = () => {
+                cmpState[setKey].mode = btn.dataset.cmpMode;
+                renderCmpSet(setKey);
+              };
+            });
+          }
+          bindCmpZoom(setKey);
+        });
+        preloadCmpSvgs().then(() => Object.keys(CMP_SETS).forEach(renderCmpSet));
       };
 
       const UI_MS = 120;
@@ -2483,7 +4121,7 @@
         btn.onclick = () => setPage(btn.dataset.go);
       });
       document.querySelectorAll(".side-link").forEach((btn) => {
-        btn.onclick = () => setPage(btn.dataset.page);
+        btn.onclick = () => navigateSide(btn.dataset.page, btn);
       });
       document.getElementById("f-names").onchange = (e) => { state.names = e.target.checked; render(); };
       document.getElementById("f-legacy").onchange = (e) => { state.legacy = e.target.checked; render(); };
@@ -2495,11 +4133,10 @@
         renderToolbarIcons();
       };
       document.getElementById("download").onclick = downloadVisible;
-      document.getElementById("burger").onclick = () => {
-        state.sidebar = !state.sidebar;
-        document.getElementById("sidebar").classList.toggle("hidden", !state.sidebar);
-        document.body.classList.toggle("nav-open", state.sidebar);
-      };
+      document.getElementById("burger").onclick = toggleSidebar;
+      document.getElementById("mobile-menu").onclick = toggleSidebar;
+      document.getElementById("nav-scrim").onclick = closeMobileNav;
+      mobileNavMq.addEventListener("change", initMobileNav);
       previewEl().addEventListener("mouseenter", () => {
         previewOver = true;
         clearTimeout(previewHideTimer);
@@ -2513,27 +4150,26 @@
         if (e.target.id === "modal") dismissModal();
       });
       document.addEventListener("keydown", (e) => {
-        if (e.key === "/" && document.activeElement.tagName !== "INPUT" && state.page !== "home" && !state.page.startsWith("docs")) {
+        if (e.key === "/" && document.activeElement.tagName !== "INPUT" && state.page !== "home" && !state.page.startsWith("docs") && state.page !== "gallery") {
           e.preventDefault();
           document.getElementById("q").focus();
         }
         if (e.key === "Escape") {
           const modal = document.getElementById("modal");
           const previewOpen = previewEl().classList.contains("is-open");
-          if (previewOpen) hidePreview();
+          if (state.sidebar && mobileNavMq.matches) closeMobileNav();
+          else if (previewOpen) hidePreview();
           else if (modal.classList.contains("is-visible")) dismissModal();
           else if (state.selected) {
             state.selected = null;
             render();
           }
         }
-        if (state.page === "docs-project" && document.activeElement.tagName !== "INPUT") {
-          if (e.key === "ArrowLeft") setProjectSlide(projectSlideIndex - 1);
-          if (e.key === "ArrowRight") setProjectSlide(projectSlideIndex + 1);
-        }
       });
 
-      initProjectCarousel();
+      initProjectMarquee();
+      initSideLinks();
+      initMobileNav();
 
       fetch("./icons.json")
         .then((r) => r.json())

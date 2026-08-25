@@ -34,7 +34,7 @@ python3 extract.py
 python3 -m http.server 8765
 ```
 
-Abre [http://127.0.0.1:8765/](http://127.0.0.1:8765/)
+Abre [http://127.0.0.1:8765/](http://127.0.0.1:8765/) en local, o el deploy en [cursoricons.vercel.app](https://cursoricons.vercel.app).
 
 ## Compartir con la comunidad
 
