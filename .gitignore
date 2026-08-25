@@ -1,0 +1,10 @@
+.DS_Store
+.env
+.env.*
+*.local
+.vercel
+__pycache__/
+*.pyc
+.cursor/
+node_modules/
+cursor-icons-16.woff2

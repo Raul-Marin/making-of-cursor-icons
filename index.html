@@ -1,0 +1,2554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The making of Cursor's icons</title>
+    <meta name="description" content="An unofficial companion to Marek Minor's essay on Cursor's icon system. Browse 600+ outline and filled icons, file types, and design concepts—a Shift+R tribute to craft in the age of AI slop." />
+    <link rel="icon" href="./assets/shift-r.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./assets/shift-r.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The making of Cursor's icons" />
+    <meta property="og:description" content="An unofficial companion to Marek Minor's essay on Cursor's icon system. Browse 600+ outline and filled icons, file types, and design concepts." />
+    <meta property="og:image" content="./assets/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The making of Cursor's icons" />
+    <meta name="twitter:description" content="An unofficial companion to Marek Minor's essay on Cursor's icon system. Browse 600+ outline and filled icons, file types, and design concepts." />
+    <meta name="twitter:image" content="./assets/og-image.jpg" />
+    <style>
+      @font-face {
+        font-family: "Cursor Display";
+        src: url("./fonts/CursorDisplay-Medium.woff2?v=2") format("woff2");
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Cursor Gothic";
+        src: url("./fonts/CursorGothic-Regular.woff2?v=2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Cursor Gothic";
+        src: url("./fonts/CursorGothic-Italic.woff2?v=2") format("woff2");
+        font-weight: 400;
+        font-style: italic;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Cursor Gothic";
+        src: url("./fonts/CursorGothic-Bold.woff2?v=2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Cursor Gothic";
+        src: url("./fonts/CursorGothic-BoldItalic.woff2?v=2") format("woff2");
+        font-weight: 700;
+        font-style: italic;
+        font-display: swap;
+      }
+
+      :root {
+        --accent: #e24e1b;
+        --ink: #1a1916;
+        --muted: #8c8983;
+        --faint: #b4b1aa;
+        --line: #e8e6e1;
+        --sidebar: #f0efeb;
+        --toolbar: #f7f7f4;
+        --bg: #f7f7f4;
+        --white: #ffffff;
+        --soft: #f0efeb;
+        --chip: #f0efeb;
+        --ok: #2f9a55;
+        --shadow: 0 24px 64px rgba(20, 18, 14, 0.18);
+        --font: "Cursor Gothic", ui-sans-serif, system-ui, sans-serif;
+        --display: "Cursor Display", "Cursor Gothic", ui-sans-serif, sans-serif;
+        --console: "Berkeley Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+        --preview: 36px;
+        --cell: 68px;
+        --content-inset: calc((var(--cell) - var(--preview)) / 2);
+      }
+      html.dark {
+        --ink: #f4f3ef;
+        --muted: #9a9791;
+        --faint: #6f6c66;
+        --line: #2c2b28;
+        --sidebar: #161513;
+        --toolbar: #1c1b18;
+        --bg: #1c1b18;
+        --white: #ffffff;
+        --soft: #23221e;
+        --chip: #2a2925;
+        --ok: #5dcc7d;
+        --shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      html { font-synthesis: none; }
+      body {
+        font-family: var(--font);
+        color: var(--ink);
+        background: var(--bg);
+        min-height: 100dvh;
+      }
+      button, input { font-family: inherit; color: inherit; }
+      button { cursor: pointer; }
+      button:focus { outline: none; }
+      .hidden { display: none !important; }
+
+      .app {
+        width: 100%;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        overflow: hidden;
+      }
+
+      .titlebar {
+        display: grid;
+        grid-template-columns: 72px 1fr 72px;
+        align-items: center;
+        height: 38px;
+        padding: 0 12px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        user-select: none;
+      }
+      .traffic { display: flex; gap: 7px; }
+      .traffic i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: block;
+      }
+      .traffic .r { background: #ff5f57; }
+      .traffic .y { background: #febc2e; }
+      .traffic .g { background: #28c840; }
+      .win-title {
+        text-align: center;
+        font-size: 13px;
+        color: #6b6964;
+        font-weight: 400;
+      }
+      html.dark .win-title { color: var(--muted); }
+
+      .shell { display: flex; flex: 1; min-height: 0; }
+
+      .sidebar {
+        width: 196px;
+        flex: 0 0 196px;
+        padding: 22px 18px 28px;
+        background: var(--sidebar);
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+      }
+      .side-label {
+        margin: 22px 0 8px;
+        font-size: 11px;
+        color: var(--faint);
+      }
+      .side-label:first-child { margin-top: 0; }
+      .side-link {
+        display: block;
+        width: 100%;
+        padding: 5px 0;
+        border: 0;
+        background: none;
+        text-align: left;
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .side-link.on { color: var(--accent); }
+      .side-link-mark {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+      .side-link-mark::after {
+        content: "*";
+        margin-left: 3px;
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .side-link-mark.on::after {
+        color: inherit;
+      }
+      .side-foot {
+        margin-top: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12px;
+        line-height: 1.35;
+        color: var(--muted);
+        border: 1px solid rgba(26, 25, 22, 0.06);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.35);
+      }
+      html.dark .side-foot {
+        border-color: rgba(244, 243, 239, 0.06);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .side-foot img {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+      }
+      .side-foot strong {
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .side-foot-link {
+        font-weight: 500;
+        color: var(--ink);
+        text-decoration: underline wavy #f5c518;
+        text-decoration-thickness: 0.75px;
+        text-underline-offset: 3px;
+      }
+      .side-foot-link:hover {
+        opacity: 0.82;
+      }
+      .docs a {
+        font-weight: 500;
+        color: var(--ink);
+        text-decoration: underline wavy var(--accent);
+        text-decoration-thickness: 0.75px;
+        text-underline-offset: 3px;
+      }
+      .docs a:hover {
+        opacity: 0.82;
+      }
+      .side-foot-note {
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .side-foot-note strong {
+        font-weight: 500;
+        color: var(--ink);
+      }
+
+      .main {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        min-height: 48px;
+        padding: 0 16px 0 12px;
+        background: var(--toolbar);
+        border-bottom: 1px solid var(--line);
+      }
+      .icon-btn {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--ink);
+        flex: 0 0 auto;
+      }
+      .icon-btn svg { width: 16px; height: 16px; }
+      #burger {
+        margin-left: calc(var(--content-inset) - 6px);
+      }
+      #theme { color: #6a6863; }
+      html.dark #theme { color: var(--muted); }
+
+      .search {
+        position: relative;
+        flex: 1 1 auto;
+        min-width: 180px;
+      }
+      .search > svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        width: 14px;
+        height: 14px;
+        transform: translateY(-50%);
+        color: #b0aea8;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .search input {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 100%;
+        height: 34px;
+        padding: 0 34px 0 34px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: transparent;
+        font-size: 13px;
+        outline: none;
+      }
+      .search input::-webkit-search-decoration,
+      .search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+      .search:hover input,
+      .search.on input,
+      .search input:focus {
+        border-color: var(--accent);
+        background: transparent;
+      }
+      .search .clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        border: 0;
+        border-radius: 50%;
+        background: #ebe9e4;
+        color: #9a9791;
+        display: none;
+        place-items: center;
+        padding: 0;
+      }
+      .search .clear svg {
+        width: 10px;
+        height: 10px;
+        display: block;
+      }
+      .search.has-q .clear { display: grid; place-items: center; }
+
+      .seg {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      .seg button {
+        border: 0;
+        background: none;
+        padding: 0;
+        color: #6a6863;
+      }
+      .seg button.on { color: var(--accent); }
+      .vr {
+        width: 1px;
+        height: 16px;
+        margin: 0 20px;
+        background: #e8e6e1;
+        flex: 0 0 1px;
+      }
+
+      .slide {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        flex-shrink: 0;
+      }
+      #zoom,
+      #dzoom {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 22px;
+        margin: 0 14px 0 0;
+        padding: 0;
+        background: transparent;
+        outline: none;
+        color: #d9d6d0;
+        accent-color: #d9d6d0;
+        cursor: pointer;
+        flex: 0 0 auto;
+      }
+      #zoom { width: 112px; }
+      #dzoom { flex: 1 1 auto; width: auto; min-width: 0; }
+      #zoom::-webkit-slider-runnable-track,
+      #dzoom::-webkit-slider-runnable-track {
+        height: 4px;
+        background: #d9d6d0;
+        border: 0;
+        border-radius: 2px;
+      }
+      #zoom::-webkit-slider-thumb,
+      #dzoom::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        margin-top: -5px;
+        border: 0;
+        border-radius: 50%;
+        background: #1a1916;
+        cursor: pointer;
+        box-shadow: none;
+      }
+      #zoom::-moz-range-track,
+      #dzoom::-moz-range-track {
+        height: 4px;
+        background: #d9d6d0;
+        border: 0;
+        border-radius: 2px;
+      }
+      #zoom::-moz-range-progress,
+      #dzoom::-moz-range-progress {
+        height: 4px;
+        background: #d9d6d0;
+        border: 0;
+        border-radius: 2px;
+      }
+      #zoom::-moz-range-thumb,
+      #dzoom::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border: 0;
+        border-radius: 50%;
+        background: #1a1916;
+        cursor: pointer;
+      }
+      html.dark #zoom::-webkit-slider-runnable-track,
+      html.dark #dzoom::-webkit-slider-runnable-track,
+      html.dark #zoom::-moz-range-track,
+      html.dark #dzoom::-moz-range-track,
+      html.dark #zoom::-moz-range-progress,
+      html.dark #dzoom::-moz-range-progress { background: #4a4843; }
+      html.dark #zoom::-webkit-slider-thumb,
+      html.dark #dzoom::-webkit-slider-thumb,
+      html.dark #zoom::-moz-range-thumb,
+      html.dark #dzoom::-moz-range-thumb { background: var(--ink); }
+      .px-input {
+        box-sizing: border-box;
+        appearance: none;
+        -webkit-appearance: none;
+        width: 36px;
+        height: 26px;
+        margin: 0;
+        padding: 0;
+        border: 1px solid #e2e0db;
+        border-radius: 4px;
+        background-color: #ffffff;
+        color: #1a1916;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        line-height: 26px;
+        text-align: center;
+        outline: none;
+        flex: 0 0 auto;
+      }
+      .px-input:focus {
+        border-color: #d9d6d0;
+        background-color: #ffffff;
+      }
+      html.dark .px-input {
+        background: var(--soft);
+        border-color: var(--line);
+        color: var(--ink);
+      }
+      .px-unit {
+        margin-left: 4px;
+        font-size: 13px;
+        color: #b0aea8;
+        line-height: 1;
+        flex: 0 0 auto;
+      }
+
+      .count {
+        margin-left: 72px;
+        font-size: 13px;
+        color: #6a6863;
+        white-space: nowrap;
+      }
+      .dl {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 30px;
+        margin-left: 16px;
+        padding: 0 13px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--ink);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      html.dark .dl { color: #1a1916; }
+      .dl svg { width: 14px; height: 14px; }
+
+      .workspace {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+      }
+      .grid-wrap {
+        flex: 1;
+        min-width: 0;
+        overflow: auto;
+        padding: 16px 12px 16px;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+      }
+      .grid-wrap:hover {
+        scrollbar-color: rgba(26, 25, 21, 0.1) transparent;
+      }
+      html.dark .grid-wrap:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+      }
+      .grid-wrap::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      .grid-wrap::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .grid-wrap::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 999px;
+      }
+      .grid-wrap:hover::-webkit-scrollbar-thumb {
+        background: rgba(26, 25, 21, 0.1);
+      }
+      html.dark .grid-wrap:hover::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .grid-wrap::-webkit-scrollbar-thumb:hover {
+        background: rgba(26, 25, 21, 0.16);
+      }
+      html.dark .grid-wrap::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));
+        gap: 2px;
+      }
+      .tile {
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        padding: 0;
+      }
+      .tile:hover { background: var(--soft); }
+      .tile.on {
+        background: var(--soft);
+        box-shadow: inset 0 0 0 2px var(--accent);
+      }
+      .tile svg {
+        width: var(--preview);
+        height: var(--preview);
+        display: block;
+      }
+      .tile .label {
+        display: none;
+        margin-top: 6px;
+        font-size: 10px;
+        color: var(--muted);
+        line-height: 1.2;
+        text-align: center;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      body.show-names .tile {
+        aspect-ratio: auto;
+        padding: 14px 6px 10px;
+      }
+      body.show-names .tile .label { display: block; }
+
+      .empty {
+        margin: 80px auto;
+        text-align: center;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .inspector {
+        width: 360px;
+        flex: 0 0 360px;
+        border-left: 1px solid var(--line);
+        padding: 24px 24px 32px;
+        background: var(--bg);
+        overflow: auto;
+        opacity: 0;
+        transform: translateX(12px);
+        transition: opacity 240ms ease, transform 240ms ease;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+      }
+      .inspector:hover {
+        scrollbar-color: rgba(26, 25, 21, 0.1) transparent;
+      }
+      html.dark .inspector:hover {
+        scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+      }
+      .inspector::-webkit-scrollbar {
+        width: 5px;
+      }
+      .inspector::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .inspector::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 999px;
+      }
+      .inspector:hover::-webkit-scrollbar-thumb {
+        background: rgba(26, 25, 21, 0.1);
+      }
+      html.dark .inspector:hover::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .inspector.is-open {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      body:not([data-page="icons"]) #inspector {
+        display: none !important;
+      }
+      .insp-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .insp-head h2 {
+        margin: 0;
+        font-family: var(--font);
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 0;
+        line-height: 1.3;
+        color: var(--ink);
+      }
+      #insp-close {
+        width: 28px;
+        height: 28px;
+        color: var(--muted);
+        flex: 0 0 auto;
+      }
+      .insp-preview {
+        display: grid;
+        place-items: center;
+        min-height: 260px;
+        padding: 24px 0 20px;
+      }
+      .insp-preview svg { width: var(--dsize, 128px); height: var(--dsize, 128px); }
+      .insp-slide {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        width: 100%;
+      }
+      .insp-slide .px-input { width: 40px; }
+      .meta {
+        margin-top: 20px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+      }
+      .meta .k {
+        margin: 18px 0 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .meta .k:first-child { margin-top: 0; }
+      .meta .v {
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .tags button {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 3px 7px;
+        border: 1px solid #d9d6d0;
+        border-radius: 4px;
+        background: transparent;
+        font-family: var(--console);
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.3;
+        color: #6a6863;
+        cursor: pointer;
+        transition: border-color 140ms ease, color 140ms ease;
+      }
+      .tags button:hover {
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+      html.dark .tags button {
+        background: transparent;
+        border-color: #3a3935;
+        color: var(--muted);
+      }
+      html.dark .tags button:hover {
+        border-color: var(--accent);
+        color: var(--ink);
+      }
+
+      .foot {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        gap: 22px;
+        padding: 10px 16px 14px;
+        background: var(--bg);
+        border-top: 1px solid var(--line);
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        color: var(--ink);
+        user-select: none;
+      }
+      .check input {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        border: 1.5px solid #c9c6c0;
+        border-radius: 3px;
+        background: var(--bg);
+      }
+      .check input:checked {
+        background: var(--accent);
+        border-color: var(--accent);
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='white' d='M10.2 2.6 4.6 8.7 1.8 6l-.9.9 3.7 3.6 6.5-7z'/></svg>");
+        background-size: 10px;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .page {
+        flex: 1;
+        min-width: 0;
+        overflow: auto;
+        padding: 16px 12px 16px;
+      }
+      #concepts-view table {
+        table-layout: auto;
+      }
+      #concepts-view th:first-child,
+      #concepts-view td:first-child {
+        padding-left: var(--content-inset);
+        padding-right: 24px;
+      }
+      #concepts-view th:nth-child(2),
+      #concepts-view td:nth-child(2) {
+        padding-right: 32px;
+      }
+      #concepts-view th:last-child,
+      #concepts-view td:last-child {
+        width: 1%;
+        white-space: nowrap;
+        padding-left: 0;
+        padding-right: 8px;
+        text-align: left;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th {
+        padding: 14px 8px;
+        text-align: left;
+        color: var(--muted);
+        font-weight: 400;
+        border-bottom: 1px solid var(--line);
+      }
+      td {
+        padding: 14px 8px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      .sample-name {
+        font-family: var(--console);
+        font-size: 13px;
+        color: var(--ink);
+      }
+      .file-sample {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .file-sample svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
+      }
+      .ext-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .ext {
+        display: inline-flex;
+        align-items: center;
+        height: 22px;
+        padding: 0 7px;
+        border-radius: 5px;
+        background: var(--chip);
+        font-family: var(--console);
+        font-size: 11px;
+        color: var(--muted);
+      }
+      #files-view th:first-child,
+      #files-view td:first-child {
+        padding-left: var(--content-inset);
+        padding-right: 24px;
+      }
+      #files-view tbody tr {
+        cursor: pointer;
+      }
+      #files-view tbody tr.static {
+        cursor: default;
+      }
+      #files-view tbody tr:hover {
+        background: var(--soft);
+      }
+      #files-view tbody tr.static:hover {
+        background: transparent;
+      }
+      .files-only { display: none !important; }
+      .hide-on-files { }
+      body[data-page="files"] .hide-on-files { display: none !important; }
+      body[data-page="files"] #color-seg,
+      body[data-page="files"] #color-vr { display: revert !important; }
+      body[data-page="files"] #color-seg {
+        display: flex !important;
+        order: -1;
+        margin-left: calc(var(--content-inset) - 6px);
+      }
+      body[data-page="files"] #color-vr { display: none !important; }
+      body[data-page="files"] .count { margin-left: auto; }
+      @media (min-width: 861px) {
+        body[data-page="files"] #burger { display: none !important; }
+      }
+      .concept-name {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .concept-name svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
+      }
+      .slug {
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background: var(--chip);
+        font-family: var(--console);
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .ok { color: var(--ok); }
+      .concepts-end td {
+        padding: 28px var(--content-inset) 16px;
+        border-bottom: 0;
+      }
+      .concepts-end-mark {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .concepts-end-line {
+        display: block;
+        width: 28px;
+        height: 1px;
+        background: var(--line);
+        transform-origin: left center;
+        transform: scaleX(0);
+        animation: concepts-end-line 0.9s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+      }
+      .concepts-end-label,
+      .concepts-end-note {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.45;
+        opacity: 0;
+        animation: concepts-end-fade 0.7s ease forwards;
+      }
+      .concepts-end-label {
+        color: var(--muted);
+        animation-delay: 0.35s;
+      }
+      .concepts-end-note {
+        max-width: 38ch;
+        color: var(--faint);
+        animation-delay: 0.55s;
+      }
+      @keyframes concepts-end-line {
+        to { transform: scaleX(1); }
+      }
+      @keyframes concepts-end-fade {
+        to { opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .concepts-end-line,
+        .concepts-end-label,
+        .concepts-end-note {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .docs {
+        max-width: 62ch;
+        padding-top: 24px;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--ink);
+      }
+      .docs h1 {
+        margin: 0 0 12px;
+        font-family: var(--display);
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+      }
+      .docs p { color: #3f3d38; }
+      html.dark .docs p { color: #c9c6bf; }
+      .docs-soon {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 0;
+        max-width: 28rem;
+      }
+      .docs-soon-line {
+        display: block;
+        width: 24px;
+        height: 1px;
+        background: var(--line);
+      }
+      .docs-soon-note {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .docs-soon-note a {
+        color: var(--ink);
+      }
+      body[data-page="docs-philo"] .toolbar,
+      body[data-page="docs-add"] .toolbar,
+      body[data-page="docs-project"] .toolbar,
+      body[data-page="home"] .toolbar { display: none; }
+      body[data-page="home"] #foot { display: none !important; }
+      body[data-page="home"] #home-view {
+        overflow: hidden;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        --home-inset: clamp(72px, 7vw, 112px);
+      }
+      body[data-page="home"] .home-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      body[data-page="home"] .home-masthead-logos {
+        flex-shrink: 0;
+        padding: clamp(20px, 2.5vh, 32px) var(--home-inset) 0 var(--home-inset);
+        margin: 0 0 clamp(96px, 12vh, 152px);
+      }
+      body[data-page="home"] .home-hero {
+        flex-shrink: 0;
+        padding: 0 var(--home-inset);
+        max-width: none;
+      }
+      body[data-page="home"] .home-masthead-title {
+        font-size: clamp(28px, 3.8vh, 42px);
+        max-width: none;
+        margin: 0;
+        white-space: nowrap;
+      }
+      body[data-page="home"] .home-masthead-lead {
+        margin: 16px 0 clamp(28px, 3.5vh, 36px);
+        font-size: clamp(14px, 1.7vh, 17px);
+        max-width: 36ch;
+      }
+      body[data-page="home"] .home-actions {
+        gap: 10px;
+      }
+      body[data-page="home"] .home-stage {
+        flex: 1;
+        min-height: 0;
+        margin-top: clamp(48px, 6vh, 72px);
+        padding: 0 0 0 var(--home-inset);
+        background: none;
+      }
+      body[data-page="home"] .home-stage-shot {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        border-radius: 12px 0 0 0;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        overflow: hidden;
+      }
+      body[data-page="home"] .home-stage-shot img {
+        object-fit: cover;
+        object-position: top left;
+      }
+      #docs-philo.page,
+      #docs-add.page,
+      #docs-project.page {
+        padding-top: 28px;
+        padding-right: 40px;
+        padding-bottom: 40px;
+        padding-left: calc(var(--content-inset) + 24px);
+        overflow: visible;
+      }
+      #docs-project.docs {
+        max-width: none;
+        font-size: 15px;
+        line-height: 1.65;
+      }
+      .docs-project-page {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .docs-project-page .docs-editorial-copy,
+      .docs-carousel {
+        max-width: 38em;
+      }
+      .docs-carousel {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-right: 0;
+      }
+      .docs-carousel-track {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        border: none;
+        background: none;
+        box-shadow: none;
+        scrollbar-width: none;
+      }
+      .docs-carousel-track::-webkit-scrollbar { display: none; }
+      .docs-carousel-slide {
+        flex: 0 0 100%;
+        margin: 0;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+      .docs-carousel-slide img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: min(52vh, 480px);
+        object-fit: contain;
+        object-position: center;
+        margin: 0 auto;
+        border-radius: 8px;
+      }
+      .docs-carousel-arrow {
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0.55;
+        transition: opacity 0.15s ease, color 0.15s ease;
+      }
+      .docs-carousel-arrow:hover {
+        opacity: 1;
+        color: var(--ink);
+      }
+      #docs-add.docs {
+        max-width: none;
+        font-size: 15px;
+        line-height: 1.65;
+      }
+      .docs-editorial {
+        max-width: 38em;
+      }
+      .docs-editorial-copy p {
+        margin: 0 0 16px;
+        color: #3f3d38;
+      }
+      html.dark .docs-editorial-copy p { color: #c9c6bf; }
+      .docs-editorial-copy p:last-child { margin-bottom: 0; }
+      .docs-editorial-copy strong { font-weight: 600; color: var(--ink); }
+      .docs-terminal {
+        margin: 20px 0 24px;
+        max-width: 260px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #2a2a28;
+        background: #141413;
+        box-shadow: 0 12px 32px rgba(20, 18, 14, 0.1);
+      }
+      html.dark .docs-terminal {
+        border-color: #3a3935;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      }
+      .docs-terminal-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 28px;
+        padding: 0 10px;
+        background: #1f1f1d;
+        border-bottom: 1px solid #2a2a28;
+      }
+      .docs-terminal-bar i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4a4a47;
+      }
+      .docs-terminal-body {
+        padding: 14px 14px 16px;
+        font-family: var(--console);
+        font-size: 13px;
+        line-height: 1;
+        color: #f4f3ef;
+        white-space: nowrap;
+      }
+      .docs-terminal-body .prompt {
+        color: #8c8983;
+      }
+      .docs-terminal-body .cursor {
+        display: inline-block;
+        width: 7px;
+        height: 14px;
+        margin-left: 1px;
+        vertical-align: -2px;
+        background: #f4f3ef;
+        animation: docs-cursor 1.1s step-end infinite;
+      }
+      @keyframes docs-cursor {
+        50% { opacity: 0; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .docs-terminal-body .cursor { animation: none; }
+      }
+      .docs-pipeline {
+        margin: 0 0 18px;
+        padding: 0;
+        list-style: none;
+      }
+      .docs-pipeline li {
+        position: relative;
+        padding: 0 0 10px 18px;
+        color: #3f3d38;
+      }
+      html.dark .docs-pipeline li { color: #c9c6bf; }
+      .docs-pipeline li:last-child { padding-bottom: 0; }
+      .docs-pipeline li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.72em;
+        width: 6px;
+        height: 1px;
+        background: var(--faint);
+      }
+      .docs-mark {
+        position: relative;
+        isolation: isolate;
+        white-space: normal;
+      }
+      .docs-mark::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        left: -0.06em;
+        right: -0.04em;
+        bottom: 0.05em;
+        height: 0.62em;
+        background: rgba(226, 78, 27, 0.16);
+        border-radius: 48% 52% 44% 56% / 52% 46% 54% 48%;
+        transform: rotate(-0.7deg) skewX(-2deg);
+      }
+      .docs-pipeline li:nth-child(2) .docs-mark::after {
+        border-radius: 54% 46% 50% 50% / 44% 56% 48% 52%;
+        transform: rotate(0.5deg) skewX(1.5deg);
+        bottom: 0.08em;
+      }
+      .docs-pipeline li:nth-child(3) .docs-mark::after {
+        border-radius: 42% 58% 55% 45% / 50% 42% 58% 50%;
+        transform: rotate(-1deg) skewX(-1deg);
+        height: 0.58em;
+      }
+      .docs-pipeline li:nth-child(4) .docs-mark::after {
+        border-radius: 50% 50% 46% 54% / 55% 45% 50% 50%;
+        transform: rotate(0.8deg) skewX(2deg);
+      }
+      .docs-pipeline li:nth-child(5) .docs-mark::after {
+        border-radius: 46% 54% 52% 48% / 48% 52% 44% 56%;
+        transform: rotate(-0.4deg) skewX(-2.5deg);
+        height: 0.56em;
+      }
+      html.dark .docs-mark::after {
+        background: rgba(226, 78, 27, 0.22);
+      }
+      @media (max-width: 720px) {
+        #docs-add.page {
+          padding-right: 20px;
+          padding-left: 20px;
+        }
+      }
+
+      .home-scroll {
+        flex: 1;
+        overflow: auto;
+        padding: 0;
+      }
+      .home-hero {
+        max-width: 720px;
+        font-family: "Cursor Gothic", sans-serif;
+        text-align: left;
+      }
+      .home-masthead-logos {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        margin: 0 0 36px;
+      }
+      .home-masthead-logos a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        text-decoration: none;
+        color: var(--ink);
+      }
+      .home-masthead-logos .cursor-lockup {
+        display: block;
+        height: 18px;
+        width: auto;
+      }
+      html.dark .home-masthead-logos .cursor-lockup {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+      }
+      .home-minor-lockup img {
+        display: block;
+        width: 18px;
+        height: 18px;
+      }
+      .home-minor-lockup .logo-dark { display: none; }
+      html.dark .home-minor-lockup .logo-light { display: none; }
+      html.dark .home-minor-lockup .logo-dark { display: block; }
+      .home-minor-lockup span {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .home-masthead-logos-sep {
+        width: 1px;
+        height: 14px;
+        background: var(--line);
+      }
+      .home-masthead-title {
+        display: block;
+        margin: 0;
+        font-size: clamp(32px, 4.2vw, 44px);
+        font-weight: 400;
+        line-height: 1.12;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+        max-width: none;
+        white-space: nowrap;
+      }
+      .home-masthead-lead {
+        display: block;
+        margin: 16px 0 32px;
+        font-size: clamp(15px, 1.8vw, 18px);
+        font-weight: 400;
+        line-height: 1.45;
+        letter-spacing: -0.01em;
+        color: var(--muted);
+        max-width: 40ch;
+      }
+      .home-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: none;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+      }
+      .home-btn:hover { opacity: 0.88; }
+      .home-btn svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+      }
+      .home-btn-primary {
+        background: #1a1916;
+        color: #fff;
+      }
+      html.dark .home-btn-primary {
+        background: #f4f3ef;
+        color: #1a1916;
+      }
+      .home-btn-secondary {
+        background: #eceae6;
+        color: #1a1916;
+      }
+      html.dark .home-btn-secondary {
+        background: #2c2b28;
+        color: #f4f3ef;
+      }
+      .home-stage {
+        padding: 0;
+        background: none;
+        overflow: hidden;
+      }
+      .home-stage-shot {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        border-radius: 0;
+        overflow: hidden;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+      }
+      html.dark .home-stage-shot {
+        box-shadow: none;
+        border: none;
+      }
+      .home-stage-shot img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+      }
+      @media (max-width: 560px) {
+        body[data-page="home"] .home-masthead-logos {
+          padding: 16px 20px 0;
+          margin-bottom: 72px;
+        }
+        body[data-page="home"] .home-hero {
+          padding: 0 20px;
+        }
+        body[data-page="home"] .home-stage {
+          padding-left: 20px;
+          margin-top: 40px;
+        }
+        body[data-page="home"] .home-masthead-title {
+          white-space: normal;
+          font-size: clamp(24px, 6vw, 32px);
+        }
+        body[data-page="home"] .home-masthead-lead {
+          max-width: none;
+          margin-bottom: 24px;
+        }
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 8;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        background: rgba(247, 246, 243, 0.45);
+        transition: opacity 120ms ease, visibility 120ms ease;
+      }
+      html.dark .modal { background: rgba(0, 0, 0, 0.45); }
+      .modal.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .modal.hidden { display: grid !important; }
+      .sheet {
+        width: min(340px, calc(100% - 40px));
+        padding: 20px 16px 18px;
+        border-radius: 12px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 50px rgba(20, 18, 14, 0.1);
+        transform: translateY(8px) scale(0.98);
+        opacity: 0;
+        transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), opacity 120ms ease;
+      }
+      .modal.is-visible .sheet {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .icon-preview {
+        position: fixed;
+        z-index: 9;
+        width: min(260px, calc(100vw - 16px));
+        padding: 14px 14px 12px;
+        border-radius: 12px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        box-shadow: 0 12px 32px rgba(20, 18, 14, 0.14);
+        pointer-events: auto;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(4px);
+        transition: opacity 100ms ease, transform 100ms ease, visibility 100ms ease;
+      }
+      .icon-preview.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .icon-preview .sheet-icon {
+        min-height: 140px;
+        padding: 20px 8px;
+        margin: 2px 0 6px;
+      }
+      .icon-preview .sheet-icon svg { width: 80px; height: 80px; }
+      .sheet-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .sheet-top strong {
+        font-size: 14px;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .sheet-top span { font-size: 12px; color: var(--muted); flex: 0 0 auto; }
+      .sheet-icon {
+        display: grid;
+        place-items: center;
+        min-height: 220px;
+        padding: 40px 12px;
+        margin: 4px 0 8px;
+      }
+      .sheet-icon svg { width: 96px; height: 96px; }
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .ghost {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 60px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--bg);
+        font-size: 12px;
+        transition: border-color 140ms ease, background-color 140ms ease;
+      }
+      .ghost:hover {
+        border-color: var(--accent);
+        background: var(--bg);
+      }
+      html.dark .ghost:hover {
+        border-color: var(--accent);
+        background: var(--bg);
+      }
+      .ghost.wide {
+        flex-direction: row;
+        width: 100%;
+        min-height: 48px;
+        margin-top: 8px;
+        gap: 10px;
+      }
+      .ghost svg { width: 16px; height: 16px; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .modal,
+        .sheet,
+        .icon-preview,
+        .inspector,
+        .grid-wrap {
+          transition: none !important;
+        }
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 28px;
+        z-index: 20;
+        transform: translateX(-50%);
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: #ffffff;
+        font-size: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+      }
+      .toast.show { opacity: 1; }
+
+      @media (max-width: 860px) {
+        .sidebar { display: none; }
+        body[data-page="files"] #color-seg { margin-left: 0; }
+        body.nav-open .sidebar { display: block; position: absolute; inset: 38px auto 0 0; z-index: 6; height: calc(100% - 38px); }
+        .inspector { display: none; }
+        .count { display: none; }
+      }
+    </style>
+  </head>
+  <body data-page="home">
+    <div class="app" id="app">
+      <div class="titlebar">
+        <div class="traffic" aria-hidden="true"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+        <div class="win-title">Cursor Icons</div>
+        <div></div>
+      </div>
+      <div class="shell">
+        <aside class="sidebar" id="sidebar">
+          <button class="side-link on" data-page="home">Home</button>
+          <div class="side-label">Icons</div>
+          <button class="side-link" data-page="icons">Icons</button>
+          <button class="side-link" data-page="concepts">Concepts</button>
+          <button class="side-link" data-page="files">File Types</button>
+          <div class="side-label">Docs</div>
+          <button class="side-link" data-page="docs-add">Adding an Icon</button>
+          <button class="side-link" data-page="docs-philo">Design Philosophy</button>
+          <button class="side-link side-link-mark" data-page="docs-project">This Project</button>
+          <p class="side-foot">
+            <img src="./assets/shift-r.png" width="16" height="16" alt="" />
+            <span>A <a class="side-foot-link" href="https://shiftr.pro" target="_blank" rel="noopener">Shift+R</a> project · tribute to craft in the age of AI slop</span>
+            <span class="side-foot-note"><strong>Disclaimer:</strong> Icons © Cursor. Unofficial educational project, not affiliated.</span>
+          </p>
+        </aside>
+        <div class="main">
+          <div class="toolbar">
+            <button class="icon-btn" id="burger" type="button" aria-label="Menu"></button>
+            <div class="vr hide-on-files"></div>
+            <label class="search hide-on-files" id="search-wrap">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.1 2.2a4.9 4.9 0 0 1 3.9 7.9l2.9 2.9-.9.9-2.9-2.9A4.9 4.9 0 1 1 7.1 2.2zm0 1.2a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4z"/></svg>
+              <input id="q" type="search" placeholder="Search icons by name, tag or unicode..." autofocus />
+              <button class="clear" id="clear" type="button" aria-label="Clear">
+                <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M2.2 2.2 7.8 7.8M7.8 2.2 2.2 7.8"/></svg>
+              </button>
+            </label>
+            <div class="vr hide-on-files"></div>
+            <div class="seg hide-on-files" id="size-seg">
+              <button data-optical="16">16px</button>
+              <button data-optical="24">24px</button>
+            </div>
+            <div class="vr hide-on-files"></div>
+            <div class="seg hide-on-files" id="style-seg">
+              <button class="on" data-style="outline">Outline</button>
+              <button data-style="filled">Filled</button>
+              <button data-style="mixed" class="files-only">Mixed</button>
+            </div>
+            <div class="vr files-only" id="color-vr"></div>
+            <div class="seg files-only" id="color-seg">
+              <button data-color="mono">Mono</button>
+              <button class="on" data-color="color">Color</button>
+            </div>
+            <div class="vr hide-on-files"></div>
+            <div class="slide hide-on-files">
+              <input id="zoom" type="range" min="16" max="64" value="36" />
+              <input class="px-input" id="px" type="text" inputmode="numeric" value="36" aria-label="Preview size" />
+              <span class="px-unit">px</span>
+            </div>
+            <div class="count" id="count">0 / 0</div>
+            <div class="vr hide-on-files"></div>
+            <button class="icon-btn" id="theme" type="button" aria-label="Theme"></button>
+            <button class="dl hide-on-files" id="download" type="button">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M14.51 8.85Q14.77 8.85 14.96 9.04Q15.15 9.23 15.15 9.49V13.49Q15.15 14.19 14.67 14.67Q14.19 15.15 13.49 15.15H2.51Q1.81 15.15 1.33 14.67Q0.85 14.19 0.85 13.49V9.49Q0.85 9.23 1.04 9.04Q1.23 8.85 1.49 8.85Q1.76 8.85 1.95 9.04Q2.13 9.23 2.13 9.49V13.49Q2.13 13.65 2.24 13.76Q2.35 13.87 2.51 13.87H13.49Q13.65 13.87 13.76 13.76Q13.87 13.65 13.87 13.49V9.49Q13.87 9.23 14.05 9.04Q14.24 8.85 14.51 8.85ZM8 0.37Q8.27 0.37 8.45 0.56Q8.64 0.75 8.64 1.01V8L11.57 5.07Q11.73 4.85 12 4.85Q12.27 4.85 12.45 5.04Q12.64 5.23 12.64 5.49Q12.64 5.76 12.43 5.92L8.43 9.92Q8.27 10.13 8 10.13Q7.73 10.13 7.57 9.92L3.57 5.92Q3.36 5.76 3.36 5.49Q3.36 5.23 3.55 5.04Q3.73 4.85 4 4.85Q4.27 4.85 4.43 5.07L7.36 8V1.01Q7.36 0.75 7.55 0.56Q7.73 0.37 8 0.37Z"/></svg>
+              Download Fonts
+            </button>
+          </div>
+          <div class="workspace">
+            <section class="grid-wrap" id="home-view">
+              <div class="home-scroll">
+                <div class="home-masthead-logos">
+                  <a href="https://cursor.com" target="_blank" rel="noopener">
+                    <img class="cursor-lockup" src="./assets/home/cursor-lockup.png" width="256" height="61" alt="Cursor" />
+                  </a>
+                  <span class="home-masthead-logos-sep" aria-hidden="true"></span>
+                  <a class="home-minor-lockup" href="https://www.minoradventures.co" target="_blank" rel="noopener">
+                    <img class="logo-light" src="./assets/home/minor-adventures.svg" width="18" height="18" alt="" />
+                    <img class="logo-dark" src="./assets/home/minor-adventures-dark.svg" width="18" height="18" alt="" />
+                    <span>Minor Adventures</span>
+                  </a>
+                </div>
+                <div class="home-hero">
+                  <h1 class="home-masthead-title">The making of Cursor's icons</h1>
+                  <p class="home-masthead-lead">A year of drawing, testing, and shipping a complete icon system for the world's favourite coding agent.</p>
+                  <div class="home-actions">
+                    <button type="button" class="home-btn home-btn-primary" data-go="icons">
+                      Browse 600+ icons
+                      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <a class="home-btn home-btn-secondary" href="https://www.minoradventures.co/blog/the-making-of-cursors-icons" target="_blank" rel="noopener">
+                      Read the article
+                      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="home-stage">
+                  <figure class="home-stage-shot">
+                    <img src="./assets/home/hero.jpg" width="1024" height="607" alt="Cursor Icons companion site" loading="eager" />
+                  </figure>
+                </div>
+              </div>
+            </section>
+            <div class="grid-wrap hidden" id="icons-view">
+              <div class="grid" id="grid"></div>
+              <p class="empty hidden" id="empty">No icons match that search.</p>
+            </div>
+            <aside class="inspector hidden" id="inspector"></aside>
+            <section class="grid-wrap hidden" id="files-view">
+              <table>
+                <thead>
+                  <tr><th></th><th>File Type</th><th>Icon</th><th>Extensions</th></tr>
+                </thead>
+                <tbody id="files-body"></tbody>
+                <tfoot id="files-foot"></tfoot>
+              </table>
+            </section>
+            <section class="grid-wrap hidden" id="concepts-view">
+              <table>
+                <thead>
+                  <tr><th>Concept</th><th>Icon</th><th>Status</th></tr>
+                </thead>
+                <tbody id="concepts-body"></tbody>
+                <tfoot id="concepts-foot"></tfoot>
+              </table>
+            </section>
+            <section class="page hidden docs" id="docs-add">
+              <article class="docs-editorial">
+                <div class="docs-editorial-copy">
+                  <p>A set that can’t grow decays, so the last deliverable is the pipeline that keeps the system alive after the drawing is done.</p>
+
+                  <p><strong>Ship it pipeline</strong><br />Here’s how an icon gets published:</p>
+
+                  <ul class="docs-pipeline">
+                    <li><span class="docs-mark">Design the icon</span> in the master Figma file, in at least one combination: 16 or 24, Outline or Filled (usually starting with 16 Outline).</li>
+                    <li><span class="docs-mark">Flatten everything</span> into single paths, because the font compiler can’t handle boolean operations or strokes that haven’t been outlined.</li>
+                    <li><span class="docs-mark">Publish the Figma library file</span>, so everyone using it gets the latest updates.</li>
+                    <li><span class="docs-mark">Export the SVGs</span>, individually or in bulk from the dedicated export boards in the Overviews file, and drop them into the repository’s correct folders.</li>
+                    <li><span class="docs-mark">Run ship it</span>.</li>
+                  </ul>
+
+                  <div class="docs-terminal" aria-hidden="true">
+                    <div class="docs-terminal-bar"><i></i><i></i><i></i></div>
+                    <div class="docs-terminal-body"><span class="prompt">&gt; </span><span class="docs-terminal-cmd"></span><span class="cursor"></span></div>
+                  </div>
+
+                  <p>That single command replaces a long chain of work. It registers any new SVGs and assigns them their codepoints. It compiles every icon into four fonts, one for each size and style, in each format the product needs. It merges the stylesheets into one. It rewrites the metadata inside each font file so the families are named correctly, because font compilers name things however they like. It regenerates the data the companion site runs on, so every icon, codepoint and tag on the site matches what’s actually in the font. It rebuilds the site. It checks that the documentation isn’t quoting an icon count from three weeks ago. Then it commits and pushes.</p>
+
+                  <p>Doing all of that by hand is an afternoon of work, and one of the steps always gets missed. Typing <strong>ship it</strong> takes a second.</p>
+
+                  <p>The exported SVGs, the icon fonts, the icon data and both sites live in a single repository, so a new icon travels from Figma to shipped in a single step. The system doesn’t depend on me remembering anything. It’s written down, it’s automated, and it’s handed over in a state where adding the next icon is routine.</p>
+                </div>
+              </article>
+            </section>
+            <section class="page hidden docs" id="docs-philo">
+              <div class="docs-soon" role="status">
+                <span class="docs-soon-line" aria-hidden="true"></span>
+                <p class="docs-soon-note">Design philosophy behind the set: <a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons">Marek Minor’s essay</a>.</p>
+              </div>
+            </section>
+            <section class="page hidden docs" id="docs-project">
+              <article class="docs-project-page">
+                <div class="docs-editorial-copy">
+                  <p>After reading <a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons">Marek Minor’s essay</a> on Minor Adventures, and sitting with the <strong>six screenshots</strong> published in that blog post, I decided to <strong>rebuild the tool</strong> featured in the article. I extracted every glyph from the app’s <strong>WOFF font</strong> with a small Python script so the icons could be browsed, searched, and enjoyed outside the product.</p>
+                  <p>What Minor and Cursor built is a <strong>masterclass in design</strong>, the kind of work <strong>worth defending</strong> when everything else defaults to slop. It isn’t just a pretty icon set; it’s proof of what design is for: <strong>clarity, consistency, and care at scale</strong>. That’s the value this project celebrates.</p>
+                  <p>This is a <a href="https://shiftr.pro" target="_blank" rel="noopener">Shift+R</a> class project with <strong>no commercial intent</strong>: an unofficial <strong>tribute to craft</strong> in the age of AI slop, <strong>not piracy</strong>. The images and context in the carousel below are taken from <a href="https://www.minoradventures.co/blog/the-making-of-cursors-icons">Minor’s blog</a>; this rebuild is my own take on the same idea: <strong>600+ icons, concepts, and file types</strong> in one place.</p>
+                </div>
+                <div class="docs-carousel" id="project-carousel" aria-roledescription="carousel">
+                  <button type="button" class="docs-carousel-arrow" id="project-carousel-prev" aria-label="Previous screenshot">←</button>
+                  <div class="docs-carousel-track" id="project-carousel-track">
+                    <figure class="docs-carousel-slide">
+                      <img src="./assets/project/03-icons-grid.webp" width="1200" height="800" alt="Icon grid screenshot from Marek Minor's blog post" />
+                    </figure>
+                    <figure class="docs-carousel-slide">
+                      <img src="./assets/project/02-concepts.webp" width="800" height="600" alt="Concepts table screenshot from Marek Minor's blog post" />
+                    </figure>
+                    <figure class="docs-carousel-slide">
+                      <img src="./assets/project/04-search.webp" width="800" height="600" alt="Search screenshot from Marek Minor's blog post" />
+                    </figure>
+                    <figure class="docs-carousel-slide">
+                      <img src="./assets/project/05-file-types.webp" width="800" height="600" alt="File types screenshot from Marek Minor's blog post" />
+                    </figure>
+                    <figure class="docs-carousel-slide">
+                      <img src="./assets/project/01-tooltip.webp" width="800" height="600" alt="Icon detail screenshot from Marek Minor's blog post" />
+                    </figure>
+                    <figure class="docs-carousel-slide">
+                      <img src="./assets/project/06-inspector.webp" width="800" height="600" alt="Inspector screenshot from Marek Minor's blog post" />
+                    </figure>
+                  </div>
+                  <button type="button" class="docs-carousel-arrow" id="project-carousel-next" aria-label="Next screenshot">→</button>
+                </div>
+              </article>
+            </section>
+          </div>
+          <div class="foot hidden" id="foot">
+            <label class="check"><input id="f-names" type="checkbox" /> Names</label>
+            <label class="check"><input id="f-legacy" type="checkbox" /> Legacy</label>
+            <label class="check"><input id="f-logos" type="checkbox" /> Logos</label>
+            <label class="check"><input id="f-files" type="checkbox" checked /> File Types</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal hidden" id="modal"></div>
+      <div class="icon-preview" id="icon-preview" hidden></div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="./file-types-data.js"></script>
+    <script>
+      const EXTRA_CONCEPTS = [
+        ["Agent", "agent"],
+        ["Agents", "agents-swarm"],
+        ["Ask", "question-circle"],
+        ["Beta", "flask"],
+        ["Browser", "browser"],
+        ["Bug", "bug"],
+        ["Compute — Large", "chip"],
+        ["Composer", "chat-bubble"],
+        ["Search", "magnifying-glass"],
+        ["Source control", "git-fork"],
+        ["Terminal", "terminal"],
+        ["Settings", "cog"],
+      ];
+
+      const conceptsEndMark = () =>
+        `<tr class="concepts-end"><td colspan="3">
+          <div class="concepts-end-mark" role="status">
+            <span class="concepts-end-line" aria-hidden="true"></span>
+            <p class="concepts-end-label">Incomplete list</p>
+            <p class="concepts-end-note">Community companion. Not affiliated with Cursor or Minor Adventures.</p>
+          </div>
+        </td></tr>`;
+
+      const state = {
+        page: "home",
+        q: "",
+        style: "outline",
+        fileColor: "color",
+        preview: 36,
+        names: false,
+        legacy: false,
+        logos: false,
+        files: true,
+        selected: null,
+        dark: false,
+        sidebar: true,
+      };
+
+      let data = { icons: [], concepts: [], count: 0 };
+      let byName = {};
+
+      const iconSvg = (name, size) => {
+        const icon = byName[name];
+        if (!icon) return "";
+        const dim = size ? ` width="${size}" height="${size}"` : "";
+        return `<svg viewBox="0 0 16 16"${dim} fill="currentColor" aria-hidden="true"><path d="${icon.path}"/></svg>`;
+      };
+
+      const uiIcon = (name) => iconSvg(name);
+
+      const renderToolbarIcons = () => {
+        document.getElementById("burger").innerHTML = uiIcon("menu");
+        document.getElementById("theme").innerHTML = uiIcon(state.dark ? "sun" : "moon");
+      };
+
+      const svg = (icon, size) =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 16 16"><path fill="currentColor" d="${icon.path}"/></svg>`;
+
+      const splitPaths = (d) => {
+        const parts = d.match(/M[^M]*/g);
+        return parts && parts.length > 1 ? parts : [d];
+      };
+
+      const paletteFor = (icon) => {
+        const base = icon.base || icon.name.replace(/-filled$/, "");
+        if (typeof LOGO_PALETTES !== "undefined" && LOGO_PALETTES[icon.name]) {
+          return LOGO_PALETTES[icon.name];
+        }
+        if (typeof LOGO_PALETTES !== "undefined" && LOGO_PALETTES[base]) {
+          return LOGO_PALETTES[base];
+        }
+        if (typeof FILE_PALETTES !== "undefined" && FILE_PALETTES[base]) {
+          return FILE_PALETTES[base];
+        }
+        return ["#6a6863", "#b4b1aa", "#f7f7f5"];
+      };
+
+      const layerPaths = (icon) =>
+        icon.layers && icon.layers.length > 1 ? icon.layers : splitPaths(icon.path);
+
+      const svgColored = (icon, size) => {
+        const fills = paletteFor(icon);
+        const paths = layerPaths(icon)
+          .map((part, i) => `<path d="${part.trim()}" fill="${fills[i % fills.length]}"/>`)
+          .join("");
+        return `<svg viewBox="0 0 16 16" width="${size}" height="${size}" fill="none" aria-hidden="true">${paths}</svg>`;
+      };
+
+      const svgFileType = (icon, size) => {
+        if (state.fileColor === "mono") {
+          return `<svg viewBox="0 0 16 16" width="${size}" height="${size}" fill="currentColor" aria-hidden="true"><path d="${icon.path}"/></svg>`;
+        }
+        const tint = icon._curated?.color;
+        if (tint) {
+          return `<svg viewBox="0 0 16 16" width="${size}" height="${size}" fill="none" aria-hidden="true"><path d="${icon.path}" fill="${tint}"/></svg>`;
+        }
+        return svgColored(icon, size);
+      };
+
+      const resolveFileIcon = (base) => {
+        const outline = byName[base];
+        const filled = byName[`${base}-filled`];
+        if (state.style === "outline") return outline;
+        if (state.style === "filled") return filled || outline;
+        return state.fileColor === "color" ? (filled || outline) : outline;
+      };
+
+      const fileTypesPool = () => {
+        if (typeof FILE_TYPES_CURATED !== "undefined") {
+          return FILE_TYPES_CURATED.map((entry) => {
+            const icon = byName[entry.icon];
+            if (!icon) return null;
+            return { ...icon, base: entry.slug, _curated: entry };
+          }).filter(Boolean);
+        }
+        const bases = [...new Set(data.icons.filter((i) => i.kind === "files" && !i.name.endsWith("-filled")).map((i) => i.base))];
+        return bases.map((base) => resolveFileIcon(base)).filter(Boolean).sort((a, b) => {
+          const la = (typeof FILE_TYPE_META !== "undefined" && FILE_TYPE_META[a.base]?.label) || a.name;
+          const lb = (typeof FILE_TYPE_META !== "undefined" && FILE_TYPE_META[b.base]?.label) || b.name;
+          return la.localeCompare(lb);
+        });
+      };
+
+      const syncFileToolbar = () => {
+        document.querySelectorAll("[data-style]").forEach((b) => b.classList.toggle("on", b.dataset.style === state.style));
+        document.querySelectorAll("[data-color]").forEach((b) => b.classList.toggle("on", b.dataset.color === state.fileColor));
+      };
+
+      const fileSvg = (icon, size) => {
+        if (icon.kind === "files" && state.fileColor === "color") {
+          return svgColored(icon, size).replace('viewBox="0 0 16 16"', 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"');
+        }
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 16 16"><path fill="#111111" d="${icon.path}"/></svg>`;
+      };
+
+      const pretty = (name) =>
+        name.replace(/-filled$/, "").replace(/-legacy$/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+      const isLogo = (icon) => /(^|-)logo|cursor-logo/.test(icon.name);
+
+      const syncOptical = () => {
+        document.querySelectorAll("[data-optical]").forEach((b) => {
+          b.classList.toggle("on", Number(b.dataset.optical) === state.preview);
+        });
+      };
+
+      const setPreview = (n) => {
+        state.preview = Math.min(64, Math.max(16, Number(n) || 36));
+        document.getElementById("zoom").value = String(state.preview);
+        syncOptical();
+        render();
+      };
+
+      const toast = (text) => {
+        const el = document.getElementById("toast");
+        el.textContent = text;
+        el.classList.add("show");
+        clearTimeout(toast.t);
+        toast.t = setTimeout(() => el.classList.remove("show"), 1400);
+      };
+
+      const copyText = async (text, label) => {
+        try { await navigator.clipboard.writeText(text); }
+        catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        toast(label);
+      };
+
+      const pool = () => {
+        const { page, style, legacy, logos, files } = state;
+        return data.icons.filter((icon) => {
+          if (page === "files") return false;
+          if (style === "filled") {
+            if (icon.kind !== "filled") return false;
+            if (isLogo(icon) && !logos) return false;
+            return true;
+          }
+          if (icon.kind === "filled") return false;
+          if (icon.kind === "files") return files;
+          if (icon.kind === "legacy") return legacy;
+          if (isLogo(icon)) return logos;
+          return icon.kind === "current";
+        });
+      };
+
+      const filtered = () => {
+        const term = state.q.trim().toLowerCase().replace(/^u\+/, "");
+        const list = pool().sort((a, b) => a.name.localeCompare(b.name));
+        if (!term) return list;
+        return list.filter((icon) =>
+          icon.name.toLowerCase().includes(term) ||
+          icon.hex.toLowerCase().includes(term) ||
+          String(icon.cp).includes(term) ||
+          icon.tags.some((t) => t.toLowerCase().includes(term))
+        );
+      };
+
+      let shipTerminalTimer;
+      const PROJECT_SLIDES = [
+        { src: "./assets/project/03-icons-grid.webp", alt: "Icon grid screenshot from Marek Minor's blog post", label: "Icon grid" },
+        { src: "./assets/project/02-concepts.webp", alt: "Concepts table screenshot from Marek Minor's blog post", label: "Concepts" },
+        { src: "./assets/project/04-search.webp", alt: "Search screenshot from Marek Minor's blog post", label: "Search" },
+        { src: "./assets/project/05-file-types.webp", alt: "File types screenshot from Marek Minor's blog post", label: "File types" },
+        { src: "./assets/project/01-tooltip.webp", alt: "Icon detail screenshot from Marek Minor's blog post", label: "Icon detail" },
+        { src: "./assets/project/06-inspector.webp", alt: "Inspector screenshot from Marek Minor's blog post", label: "Inspector" },
+      ];
+      let projectSlideIndex = 0;
+      let projectCarouselReady = false;
+      let projectAutoplayTimer;
+
+      const getProjectTrack = () => document.getElementById("project-carousel-track");
+      const projectSlideCount = () => getProjectTrack()?.children.length || PROJECT_SLIDES.length;
+
+      const setProjectSlide = (index) => {
+        const track = getProjectTrack();
+        if (!track) return;
+        projectSlideIndex = (index + projectSlideCount()) % projectSlideCount();
+        track.scrollTo({ left: track.clientWidth * projectSlideIndex, behavior: "smooth" });
+      };
+
+      const stopProjectAutoplay = () => clearInterval(projectAutoplayTimer);
+
+      const startProjectAutoplay = () => {
+        stopProjectAutoplay();
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        projectAutoplayTimer = setInterval(() => {
+          if (state.page === "docs-project") setProjectSlide(projectSlideIndex + 1);
+        }, 4500);
+      };
+
+      const initProjectCarousel = () => {
+        const track = getProjectTrack();
+        const carousel = document.getElementById("project-carousel");
+        const prev = document.getElementById("project-carousel-prev");
+        const next = document.getElementById("project-carousel-next");
+        if (!track || !prev || !next || !carousel) return;
+        if (!projectCarouselReady) {
+          prev.onclick = () => { setProjectSlide(projectSlideIndex - 1); startProjectAutoplay(); };
+          next.onclick = () => { setProjectSlide(projectSlideIndex + 1); startProjectAutoplay(); };
+          track.addEventListener("scroll", () => {
+            const i = Math.round(track.scrollLeft / track.clientWidth);
+            if (i !== projectSlideIndex) projectSlideIndex = i;
+          }, { passive: true });
+          carousel.addEventListener("mouseenter", stopProjectAutoplay);
+          carousel.addEventListener("mouseleave", startProjectAutoplay);
+          projectCarouselReady = true;
+        }
+        track.scrollLeft = 0;
+        projectSlideIndex = 0;
+        startProjectAutoplay();
+      };
+
+      const runShipTerminal = () => {
+        clearTimeout(shipTerminalTimer);
+        const cmd = document.querySelector("#docs-add .docs-terminal-cmd");
+        if (!cmd) return;
+        const text = "ship it";
+        cmd.textContent = "";
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          cmd.textContent = text;
+          return;
+        }
+        let i = 0;
+        const step = () => {
+          cmd.textContent = text.slice(0, i);
+          if (i++ <= text.length) shipTerminalTimer = setTimeout(step, i === 1 ? 350 : 70);
+        };
+        step();
+      };
+
+      const setPage = (page) => {
+        const prev = state.page;
+        state.page = page;
+        document.body.dataset.page = page;
+        if (page === "files" && prev !== "files") {
+          state.fileColor = "color";
+        }
+        if (page === "files") {
+          state.q = "";
+          document.getElementById("q").value = "";
+        }
+        if (page !== "files" && state.style === "mixed") state.style = "outline";
+        if (page !== "icons") state.selected = null;
+        document.querySelectorAll(".side-link").forEach((b) => b.classList.toggle("on", b.dataset.page === page));
+        document.getElementById("home-view").classList.toggle("hidden", page !== "home");
+        document.getElementById("icons-view").classList.toggle("hidden", page !== "icons");
+        document.getElementById("files-view").classList.toggle("hidden", page !== "files");
+        document.getElementById("concepts-view").classList.toggle("hidden", page !== "concepts");
+        document.getElementById("docs-add").classList.toggle("hidden", page !== "docs-add");
+        document.getElementById("docs-philo").classList.toggle("hidden", page !== "docs-philo");
+        document.getElementById("docs-project").classList.toggle("hidden", page !== "docs-project");
+        document.getElementById("foot").classList.toggle("hidden", page !== "icons");
+        document.getElementById("search-wrap").classList.toggle("hidden", page.startsWith("docs") || page === "home");
+        syncFileToolbar();
+        document.getElementById("q").placeholder =
+          page === "concepts" ? "Search concepts..." :
+          page === "files" ? "Search file types..." :
+          "Search icons by name, tag or unicode...";
+        hidePreview();
+        dismissModal();
+        render();
+        renderInspector();
+        if (page === "docs-add") requestAnimationFrame(runShipTerminal);
+        if (page === "docs-project") {
+          projectSlideIndex = 0;
+          requestAnimationFrame(initProjectCarousel);
+        } else {
+          stopProjectAutoplay();
+        }
+      };
+
+      const UI_MS = 120;
+      const PREVIEW_SHOW_MS = 200;
+      const PREVIEW_HIDE_MS = 80;
+      let previewShowTimer = null;
+      let previewHideTimer = null;
+      let previewOver = false;
+      let anchorOver = false;
+
+      const previewEl = () => document.getElementById("icon-preview");
+
+      const previewMarkup = (icon) => `
+        <div class="sheet-top">
+          <strong>${icon.name}</strong>
+          <span>U+${icon.hex}</span>
+        </div>
+        <div class="sheet-icon">${icon.kind === "files" ? svgFileType(icon, 96) : isLogo(icon) && icon.layers ? svgColored(icon, 96) : svg(icon, 96)}</div>
+        <div class="row2">
+          <button class="ghost" data-a="svg" type="button">${uiIcon("copy")} Copy SVG</button>
+          <button class="ghost" data-a="dl" type="button">${uiIcon("arrow-bracket-to-down")} Download SVG</button>
+        </div>
+        <button class="ghost wide" data-a="char" type="button">${uiIcon("copy")} Copy Symbol</button>`;
+
+      const bindPreviewActions = (root, icon) => {
+        root.querySelector("[data-a=svg]").onclick = (e) => { e.stopPropagation(); copyText(fileSvg(icon, 16), "SVG copied"); };
+        root.querySelector("[data-a=dl]").onclick = (e) => { e.stopPropagation(); downloadSvg(icon); };
+        root.querySelector("[data-a=char]").onclick = (e) => { e.stopPropagation(); copyText(String.fromCodePoint(icon.cp), "Symbol copied"); };
+      };
+
+      const placePreview = (el, anchor) => {
+        const pad = 8;
+        const gap = 6;
+        const tile = anchor.getBoundingClientRect();
+        el.style.visibility = "hidden";
+        el.classList.add("is-open");
+        const w = el.offsetWidth;
+        const h = el.offsetHeight;
+        let left = tile.right + gap;
+        let top = tile.top + Math.max(0, (tile.height - h) * 0.5);
+        if (left + w > window.innerWidth - pad) left = tile.left - gap - w;
+        if (left < pad) {
+          left = Math.max(pad, Math.min(tile.left, window.innerWidth - pad - w));
+          top = tile.bottom + gap;
+        }
+        if (top + h > window.innerHeight - pad) top = window.innerHeight - pad - h;
+        if (top < pad) top = pad;
+        el.style.left = `${Math.round(left)}px`;
+        el.style.top = `${Math.round(top)}px`;
+        el.style.visibility = "";
+        requestAnimationFrame(() => el.classList.add("is-open"));
+      };
+
+      const hidePreview = () => {
+        clearTimeout(previewShowTimer);
+        clearTimeout(previewHideTimer);
+        previewShowTimer = null;
+        previewHideTimer = null;
+        const el = previewEl();
+        el.classList.remove("is-open");
+        el.hidden = true;
+        el.innerHTML = "";
+      };
+
+      const scheduleHidePreview = () => {
+        clearTimeout(previewHideTimer);
+        previewHideTimer = window.setTimeout(() => {
+          if (!previewOver && !anchorOver) hidePreview();
+        }, PREVIEW_HIDE_MS);
+      };
+
+      const openPreview = (icon, anchor) => {
+        clearTimeout(previewHideTimer);
+        clearTimeout(previewShowTimer);
+        const el = previewEl();
+        el.hidden = false;
+        el.classList.remove("is-open");
+        el.innerHTML = previewMarkup(icon);
+        bindPreviewActions(el, icon);
+        placePreview(el, anchor);
+      };
+
+      const onPreviewEnter = (icon, anchor) => {
+        anchorOver = true;
+        clearTimeout(previewHideTimer);
+        clearTimeout(previewShowTimer);
+        previewShowTimer = window.setTimeout(() => {
+          if (anchorOver) openPreview(icon, anchor);
+        }, PREVIEW_SHOW_MS);
+      };
+
+      const onPreviewLeave = () => {
+        anchorOver = false;
+        clearTimeout(previewShowTimer);
+        scheduleHidePreview();
+      };
+
+      const dismissModal = () => {
+        const modal = document.getElementById("modal");
+        if (modal.classList.contains("hidden") && !modal.classList.contains("is-visible")) return;
+        modal.classList.remove("is-visible");
+        window.setTimeout(() => {
+          if (!modal.classList.contains("is-visible")) {
+            modal.classList.add("hidden");
+            modal.innerHTML = "";
+          }
+        }, UI_MS);
+      };
+
+      const showFileModal = (icon) => {
+        hidePreview();
+        const modal = document.getElementById("modal");
+        modal.classList.remove("hidden");
+        modal.classList.remove("is-visible");
+        modal.innerHTML = `<div class="sheet" role="dialog">${previewMarkup(icon)}</div>`;
+        bindPreviewActions(modal, icon);
+        requestAnimationFrame(() => modal.classList.add("is-visible"));
+      };
+
+      const selectIcon = (icon) => {
+        hidePreview();
+        state.selected = icon;
+        renderInspector();
+        document.querySelectorAll(".tile").forEach((el) => el.classList.toggle("on", el.dataset.name === icon.name));
+      };
+
+      const downloadSvg = (icon) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([fileSvg(icon, 16)], { type: "image/svg+xml" }));
+        a.download = icon.name + ".svg";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast(icon.name + ".svg");
+      };
+
+      const crc32 = (buf) => {
+        let c = ~0;
+        for (let i = 0; i < buf.length; i++) {
+          c ^= buf[i];
+          for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xedb88320 : c >>> 1;
+        }
+        return ~c >>> 0;
+      };
+
+      const zipStore = (files) => {
+        const enc = new TextEncoder();
+        const chunks = [];
+        const centrals = [];
+        let offset = 0;
+        const u16 = (n) => { const b = new Uint8Array(2); new DataView(b.buffer).setUint16(0, n, true); return b; };
+        const u32 = (n) => { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n, true); return b; };
+        for (const file of files) {
+          const name = enc.encode(file.name);
+          const data = enc.encode(file.body);
+          const crc = crc32(data);
+          const local = [enc.encode("PK\x03\x04"), u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), name, data];
+          const localSize = local.reduce((n, p) => n + p.length, 0);
+          const central = [enc.encode("PK\x01\x02"), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset), name];
+          chunks.push(...local);
+          centrals.push(...central);
+          offset += localSize;
+        }
+        const centralSize = centrals.reduce((n, p) => n + p.length, 0);
+        const end = [enc.encode("PK\x05\x06"), u16(0), u16(0), u16(files.length), u16(files.length), u32(centralSize), u32(offset), u16(0)];
+        const parts = [...chunks, ...centrals, ...end];
+        const total = parts.reduce((n, p) => n + p.length, 0);
+        const out = new Uint8Array(total);
+        let o = 0;
+        for (const p of parts) { out.set(p, o); o += p.length; }
+        return out;
+      };
+
+      const downloadVisible = () => {
+        const list = filtered();
+        if (!list.length) { toast("Nothing to download"); return; }
+        const files = list.map((icon) => ({ name: icon.name + ".svg", body: fileSvg(icon, 16) }));
+        const zip = zipStore(files);
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([zip], { type: "application/zip" }));
+        a.download = "cursor-icons-svg.zip";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast("SVG pack · font stays local");
+      };
+
+      const renderInspector = () => {
+        const el = document.getElementById("inspector");
+        const workspace = document.querySelector(".workspace");
+        const icon = state.selected;
+        const onIcons = state.page === "icons" && window.innerWidth > 860;
+        const show = Boolean(icon) && onIcons;
+
+        if (!show) {
+          workspace.classList.remove("has-inspector");
+          el.classList.add("hidden");
+          el.classList.remove("is-open");
+          if (!onIcons || !icon) el.innerHTML = "";
+          return;
+        }
+
+        const wasHidden = el.classList.contains("hidden");
+        workspace.classList.add("has-inspector");
+        el.classList.remove("hidden");
+        el.innerHTML = `
+          <div class="insp-head">
+            <h2>${pretty(icon.name)}</h2>
+            <button class="icon-btn" id="insp-close" type="button">${uiIcon("x")}</button>
+          </div>
+          <div class="insp-preview" id="insp-preview">${svg(icon, 128)}</div>
+          <div class="insp-slide">
+            <input id="dzoom" type="range" min="32" max="192" value="128" />
+            <input class="px-input" id="dpx" type="text" inputmode="numeric" value="128" aria-label="Inspector preview size" />
+            <span class="px-unit">px</span>
+          </div>
+          <div class="meta">
+            <div class="k">Name</div>
+            <div class="v">${icon.name}</div>
+            <div class="k">Unicode</div>
+            <div class="v">U+${icon.hex}</div>
+            <div class="k">Tags</div>
+            <div class="tags">${icon.tags.map((t) => `<button data-tag="${t}">${t}</button>`).join("")}</div>
+          </div>`;
+        document.getElementById("insp-close").onclick = () => {
+          state.selected = null;
+          render();
+        };
+        const setInspSize = (n) => {
+          const size = Math.min(192, Math.max(32, Number(n) || 128));
+          document.getElementById("dzoom").value = String(size);
+          if (document.activeElement !== document.getElementById("dpx")) {
+            document.getElementById("dpx").value = String(size);
+          }
+          document.getElementById("insp-preview").style.setProperty("--dsize", size + "px");
+          document.getElementById("insp-preview").innerHTML = svg(icon, size);
+        };
+        document.getElementById("dzoom").oninput = (e) => setInspSize(e.target.value);
+        document.getElementById("dpx").addEventListener("change", (e) => setInspSize(e.target.value));
+        el.querySelectorAll("[data-tag]").forEach((btn) => {
+          btn.onclick = () => {
+            document.getElementById("q").value = btn.dataset.tag;
+            state.q = btn.dataset.tag;
+            render();
+          };
+        });
+        if (wasHidden) {
+          el.classList.remove("is-open");
+          requestAnimationFrame(() => el.classList.add("is-open"));
+        } else {
+          el.classList.add("is-open");
+        }
+      };
+
+      const renderConcepts = () => {
+        const term = state.q.trim().toLowerCase();
+        const rows = [];
+        const seen = new Set();
+        const add = (label, name) => {
+          if (seen.has(label)) return;
+          const icon = byName[name];
+          if (!icon) return;
+          if (term && !label.toLowerCase().includes(term) && !name.includes(term)) return;
+          seen.add(label);
+          rows.push(`<tr>
+            <td><div class="concept-name">${svg(icon, 18)} ${label}</div></td>
+            <td><span class="slug">${name}</span></td>
+            <td class="ok">Approved</td>
+          </tr>`);
+        };
+        EXTRA_CONCEPTS.forEach(([label, name]) => add(label, name));
+        (data.concepts || []).forEach((row) => {
+          if (Array.isArray(row)) add(row[0], row[1]);
+        });
+        document.getElementById("concepts-body").innerHTML = rows.join("");
+        document.getElementById("concepts-foot").innerHTML =
+          term || !rows.length ? "" : conceptsEndMark();
+        document.getElementById("count").textContent = rows.length + " / " + (data.concepts.length + EXTRA_CONCEPTS.length);
+      };
+
+      const renderFiles = () => {
+        const term = state.q.trim().toLowerCase();
+        const all = fileTypesPool();
+        const list = term
+          ? all.filter((icon) => {
+              const meta = (typeof FILE_TYPE_META !== "undefined" && FILE_TYPE_META[icon.base]) || {};
+              const label = meta.label || icon.name;
+              const sample = meta.sample || "";
+              const ext = (meta.ext || []).join(" ");
+              return [label, sample, icon.base, icon.name, ext, ...(icon.tags || [])].join(" ").toLowerCase().includes(term);
+            })
+          : all;
+        document.getElementById("files-body").innerHTML = list.map((icon) => {
+          const curated = icon._curated;
+          const meta = curated || (typeof FILE_TYPE_META !== "undefined" && FILE_TYPE_META[icon.base]) || {
+            label: pretty(icon.base.replace(/^file-type-/, "")),
+            sample: icon.base.replace(/^file-type-/, ""),
+            ext: [],
+          };
+          const exts = meta.ext.map((e) => `<span class="ext">${e}</span>`).join("");
+          return `<tr data-name="${icon.name}"${icon._curated ? ' class="static"' : ""}>
+            <td><div class="file-sample">${svgFileType(icon, 18)} <span class="sample-name">${meta.sample}</span></div></td>
+            <td>${meta.label}</td>
+            <td><span class="slug">${icon.base}</span></td>
+            <td><div class="ext-list">${exts}</div></td>
+          </tr>`;
+        }).join("");
+        const total = typeof FILE_TYPES_CURATED !== "undefined" ? FILE_TYPES_CURATED.length : all.length;
+        document.getElementById("files-foot").innerHTML =
+          term || !list.length ? "" : conceptsEndMark().replace('colspan="3"', 'colspan="4"');
+        document.getElementById("count").textContent = list.length + " / " + total;
+        document.getElementById("files-body").querySelectorAll("tr:not(.static)").forEach((row) => {
+          const icon = byName[row.dataset.name];
+          row.onmouseenter = () => onPreviewEnter(icon, row);
+          row.onmouseleave = onPreviewLeave;
+          row.onclick = () => showFileModal(icon);
+        });
+      };
+
+      const render = () => {
+        document.documentElement.style.setProperty("--preview", state.preview + "px");
+        document.documentElement.style.setProperty("--cell", Math.max(56, state.preview + 32) + "px");
+        document.body.classList.toggle("show-names", state.names);
+        if (document.activeElement !== document.getElementById("px")) {
+          document.getElementById("px").value = String(state.preview);
+        }
+        syncOptical();
+        document.getElementById("search-wrap").classList.toggle("has-q", Boolean(state.q));
+
+        if (state.page === "concepts") { renderConcepts(); return; }
+        if (state.page === "files") { renderFiles(); return; }
+        if (state.page === "home") {
+          document.getElementById("count").textContent = "";
+          return;
+        }
+        if (state.page.startsWith("docs")) {
+          document.getElementById("count").textContent = "";
+          return;
+        }
+
+        const all = pool();
+        const list = filtered();
+        document.getElementById("count").textContent = list.length + " / " + all.length;
+        document.getElementById("empty").classList.toggle("hidden", list.length > 0);
+        const grid = document.getElementById("grid");
+        const frag = document.createDocumentFragment();
+        for (const icon of list) {
+          const btn = document.createElement("button");
+          btn.className = "tile" + (state.selected && state.selected.name === icon.name ? " on" : "");
+          btn.type = "button";
+          btn.dataset.name = icon.name;
+          btn.title = icon.name;
+          btn.innerHTML = svg(icon, state.preview) + `<span class="label">${icon.name}</span>`;
+          btn.onmouseenter = () => onPreviewEnter(icon, btn);
+          btn.onmouseleave = onPreviewLeave;
+          btn.onclick = () => selectIcon(icon);
+          frag.appendChild(btn);
+        }
+        grid.replaceChildren(frag);
+        renderInspector();
+      };
+
+      document.getElementById("q").addEventListener("input", (e) => {
+        state.q = e.target.value;
+        render();
+      });
+      const searchWrap = document.getElementById("search-wrap");
+      const searchInput = document.getElementById("q");
+      const syncSearchOn = () => searchWrap.classList.toggle("on", document.activeElement === searchInput);
+      searchInput.addEventListener("focus", syncSearchOn);
+      searchInput.addEventListener("blur", syncSearchOn);
+      syncSearchOn();
+      document.getElementById("clear").onclick = () => {
+        state.q = "";
+        document.getElementById("q").value = "";
+        document.getElementById("q").focus();
+        render();
+      };
+      document.getElementById("zoom").oninput = (e) => {
+        setPreview(e.target.value);
+      };
+      document.getElementById("px").addEventListener("change", (e) => {
+        setPreview(parseInt(e.target.value, 10) || 36);
+      });
+      document.querySelectorAll("[data-optical]").forEach((btn) => {
+        btn.onclick = () => setPreview(btn.dataset.optical);
+      });
+      document.querySelectorAll("[data-style]").forEach((btn) => {
+        btn.onclick = () => {
+          state.style = btn.dataset.style;
+          syncFileToolbar();
+          render();
+        };
+      });
+      document.querySelectorAll("[data-color]").forEach((btn) => {
+        btn.onclick = () => {
+          state.fileColor = btn.dataset.color;
+          syncFileToolbar();
+          render();
+        };
+      });
+      document.querySelectorAll("[data-go]").forEach((btn) => {
+        btn.onclick = () => setPage(btn.dataset.go);
+      });
+      document.querySelectorAll(".side-link").forEach((btn) => {
+        btn.onclick = () => setPage(btn.dataset.page);
+      });
+      document.getElementById("f-names").onchange = (e) => { state.names = e.target.checked; render(); };
+      document.getElementById("f-legacy").onchange = (e) => { state.legacy = e.target.checked; render(); };
+      document.getElementById("f-logos").onchange = (e) => { state.logos = e.target.checked; render(); };
+      document.getElementById("f-files").onchange = (e) => { state.files = e.target.checked; render(); };
+      document.getElementById("theme").onclick = () => {
+        state.dark = !state.dark;
+        document.documentElement.classList.toggle("dark", state.dark);
+        renderToolbarIcons();
+      };
+      document.getElementById("download").onclick = downloadVisible;
+      document.getElementById("burger").onclick = () => {
+        state.sidebar = !state.sidebar;
+        document.getElementById("sidebar").classList.toggle("hidden", !state.sidebar);
+        document.body.classList.toggle("nav-open", state.sidebar);
+      };
+      previewEl().addEventListener("mouseenter", () => {
+        previewOver = true;
+        clearTimeout(previewHideTimer);
+      });
+      previewEl().addEventListener("mouseleave", () => {
+        previewOver = false;
+        scheduleHidePreview();
+      });
+      document.getElementById("icons-view").addEventListener("scroll", hidePreview, { passive: true });
+      document.getElementById("modal").addEventListener("click", (e) => {
+        if (e.target.id === "modal") dismissModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "/" && document.activeElement.tagName !== "INPUT" && state.page !== "home" && !state.page.startsWith("docs")) {
+          e.preventDefault();
+          document.getElementById("q").focus();
+        }
+        if (e.key === "Escape") {
+          const modal = document.getElementById("modal");
+          const previewOpen = previewEl().classList.contains("is-open");
+          if (previewOpen) hidePreview();
+          else if (modal.classList.contains("is-visible")) dismissModal();
+          else if (state.selected) {
+            state.selected = null;
+            render();
+          }
+        }
+        if (state.page === "docs-project" && document.activeElement.tagName !== "INPUT") {
+          if (e.key === "ArrowLeft") setProjectSlide(projectSlideIndex - 1);
+          if (e.key === "ArrowRight") setProjectSlide(projectSlideIndex + 1);
+        }
+      });
+
+      initProjectCarousel();
+
+      fetch("./icons.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          byName = Object.fromEntries(data.icons.map((i) => [i.name, i]));
+          renderToolbarIcons();
+          syncFileToolbar();
+          const start = new URLSearchParams(location.search).get("page");
+          if (start && start !== "home") setPage(start);
+          else render();
+        })
+        .catch(() => {
+          document.getElementById("empty").textContent = "Run python3 extract.py first.";
+          document.getElementById("empty").classList.remove("hidden");
+        });
+    </script>
+  </body>
+</html>
